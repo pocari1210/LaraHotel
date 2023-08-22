@@ -1,0 +1,51 @@
+
+2-Breezeマルチ認証①
+
+下記コマンドで、コントローラーファイル新規作成
+php artisan make:controller AdminController
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Http\Controllers\AdminController;
+
+Route::get('/admin/dashboard', [AdminController::class, 'AdminDashboard'])
+  ->name('admin.dashboard');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\AdminController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class AdminController extends Controller
+{
+  public function AdminDashboard()
+  {
+    return view('admin.index');
+  } // End Method 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+resources/views/admin/admin_dashboard.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+ログインをした後、URLを「admin/dashboard」で検索し、
+疎通が行えたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
