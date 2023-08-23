@@ -1,0 +1,79 @@
+
+5-名前や電話番号でログイン
+
+
+◆ビューの編集◆
+
+ディレクトリ
+\resources\views\auth\login.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <!-- Email Address -->
+    <div>
+
+      ↓↓valueの中身を変更↓↓
+      <x-input-label for="login" :value="__('Email/Name/Phone')" />
+      <x-text-input id="login" class="block mt-1 w-full" type="text" 
+       name="login" :value="old('login')" required autofocus autocomplete="username" />
+
+    </div>
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆リクエストファイル編集◆
+
+ディレクトリ
+\app\Http\Requests\Auth\LoginRequest.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function rules(): array
+  {
+    return [
+      'login' => ['required', 'string'],
+      'password' => ['required', 'string'],
+    ];
+  }
+
+  public function authenticate(): void
+  {
+    $this->ensureIsNotRateLimited();
+
+    $user = User::where('email', $this->login)
+      ->orWhere('name', $this->login)
+      ->orWhere('phone', $this->login)
+      ->first();
+
+    if (!$user || !Hash::check($this->password, $user->password)) {
+      RateLimiter::hit($this->throttleKey());
+
+      throw ValidationException::withMessages([
+        'login' => trans('auth.failed'),
+      ]);
+    }
+
+    Auth::login($user, $this->boolean('remember'));
+    RateLimiter::clear($this->throttleKey());
+  }
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
