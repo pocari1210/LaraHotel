@@ -4,7 +4,7 @@
       <img src="{{asset('backend/assets/images/logo-icon.png')}}" class="logo-icon" alt="logo icon">
     </div>
     <div>
-      <h4 class="logo-text">Easy</h4>
+      <h4 class="logo-text">LaraHotel</h4>
     </div>
     <div class="toggle-icon ms-auto"><i class='bx bx-arrow-back'></i>
     </div>
@@ -66,11 +66,7 @@
       </ul>
     </li>
 
-
-
-
     <li class="menu-label">Others</li>
-
 
     <li>
       <a href="#" target="_blank">
