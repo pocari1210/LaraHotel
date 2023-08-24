@@ -31,6 +31,10 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
+// Admin権限のログインページ遷移のroute
+Route::get('/admin/login', [AdminController::class, 'AdminLogin'])
+  ->name('admin.login');
+
 // Admin Group Middleware 
 Route::middleware(['auth', 'roles:admin'])->group(function () {
 

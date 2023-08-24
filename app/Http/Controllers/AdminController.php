@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+
+  // ★Admin権限のLoginのコントローラー★
+  public function AdminLogin()
+  {
+    return view('admin.admin_login');
+  } // End Mehtod 
+
   public function AdminDashboard()
   {
     return view('admin.admin_dashboard');
@@ -20,6 +27,6 @@ class AdminController extends Controller
 
     $request->session()->regenerateToken();
 
-    return redirect('/login');
+    return redirect('/admin/login');
   }
 }
