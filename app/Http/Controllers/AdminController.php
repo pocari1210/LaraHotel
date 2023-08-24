@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -22,7 +23,13 @@ class AdminController extends Controller
   // ★プロフィールページ疎通のコントローラー★
   public function AdminProfile()
   {
-    return view('admin.admin_profile_view');
+    $id = Auth::user()->id;
+    $profileData = User::find($id);
+
+    return view(
+      'admin.admin_profile_view',
+      compact('profileData')
+    );
   } // End Method 
 
   public function AdminLogout(Request $request)
