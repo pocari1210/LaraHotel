@@ -44,4 +44,8 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
   // Admindashboardからのログアウトのroute
   Route::get('/admin/logout', [AdminController::class, 'AdminLogout'])
     ->name('admin.logout');
+
+  // adminのプロフィールページ遷移のroute
+  Route::get('/admin/profile', [AdminController::class, 'AdminProfile'])
+    ->name('admin.profile');
 }); // End Admin Group Middleware 

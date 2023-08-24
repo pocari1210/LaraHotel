@@ -19,6 +19,12 @@ class AdminController extends Controller
     return view('admin.admin_dashboard');
   } // End Method 
 
+  // ★プロフィールページ疎通のコントローラー★
+  public function AdminProfile()
+  {
+    return view('admin.admin_profile_view');
+  } // End Method 
+
   public function AdminLogout(Request $request)
   {
     Auth::guard('web')->logout();
