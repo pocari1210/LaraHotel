@@ -56,4 +56,8 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
   // パスワード更新ページ遷移のroute
   Route::get('/admin/change/password', [AdminController::class, 'AdminChangePassword'])
     ->name('admin.change.password');
+
+  // パスワード更新処理のroute    
+  Route::post('/admin/password/update', [AdminController::class, 'AdminPasswordUpdate'])
+    ->name('admin.password.update');
 }); // End Admin Group Middleware 
