@@ -52,4 +52,8 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
   // adminのプロフィール情報更新のroute
   Route::post('/admin/profile/store', [AdminController::class, 'AdminProfileStore'])
     ->name('admin.profile.store');
+
+  // パスワード更新ページ遷移のroute
+  Route::get('/admin/change/password', [AdminController::class, 'AdminChangePassword'])
+    ->name('admin.change.password');
 }); // End Admin Group Middleware 
