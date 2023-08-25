@@ -22,8 +22,6 @@
             </a>
           </li>
 
-
-
           <li class="nav-item dropdown dropdown-large">
             <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" data-bs-toggle="dropdown"><span class="alert-count">7</span>
               <i class='bx bx-bell'></i>
@@ -336,12 +334,19 @@
           </li>
         </ul>
       </div>
+
+      @php
+      $id = Auth::user()->id;
+      $profileData = App\Models\User::find($id);
+      @endphp
+
       <div class="user-box dropdown px-3">
         <a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="{{asset('backend/assets/images/avatars/avatar-2.png')}}" class="user-img" alt="user avatar">
+          <img src="{{ (!empty($profileData->photo)) ? 
+      url('storage/upload/admin_images/'.$profileData->photo) : url('storage/upload/no_image.jpg') }}" class="user-img" alt="user avatar">
           <div class="user-info">
-            <p class="user-name mb-0">Pauline Seitz</p>
-            <p class="designattion mb-0">Web Designer</p>
+            <p class="user-name mb-0">{{ $profileData->name }}</p>
+            <p class="designattion mb-0">{{ $profileData->email }}</p>
           </div>
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
