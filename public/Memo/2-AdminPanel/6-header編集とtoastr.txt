@@ -1,0 +1,105 @@
+
+6-header編集とtoastr
+
+◆header更新◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @php
+  $id = Auth::user()->id;
+  $profileData = App\Models\User::find($id);
+  @endphp
+
+  <div class="user-box dropdown px-3">
+    <a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <img src="{{ (!empty($profileData->photo)) ? 
+      url('upload/admin_images/'.$profileData->photo) : url('upload/no_image.jpg') }}" class="user-img" alt="user avatar">
+      <div class="user-info">
+        <p class="user-name mb-0">{{ $profileData->name }}</p>
+        <p class="designattion mb-0">{{ $profileData->email }}</p>
+      </div>
+    </a>
+
+★コード解説★
+@phpディレクティブで、ユーザー情報をheaderに疎通している
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ベーステンプレート編集◆
+
+ディレクトリ
+\resources\views\admin\admin_dashboard.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <!-- toastr CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+  <!-- toastr CSS -->
+
+  <!-- toastr JS -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+  <script>
+    @if(Session::has('message'))
+    var type = "{{ Session::get('alert-type','info') }}"
+    switch (type) {
+      case 'info':
+        toastr.info(" {{ Session::get('message') }} ");
+        break;
+      case 'success':
+        toastr.success(" {{ Session::get('message') }} ");
+        break;
+      case 'warning':
+        toastr.warning(" {{ Session::get('message') }} ");
+        break;
+      case 'error':
+        toastr.error(" {{ Session::get('message') }} ");
+        break;
+    }
+    @endif
+  </script>
+  <!-- toastr JS -->
+
+★コード解説★
+テンプレートベースにtoastrを設定している
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  // プロフィール情報更新のコントローラー
+  public function AdminProfileStore(Request $request)
+  {
+
+    if ($request->file('photo')) {
+      $file = $request->file('photo');
+      @unlink(public_path('strage/upload/admin_images/' . $data->photo));
+      $filename = date('YmdHi') . $file->getClientOriginalName();
+      $file->move(public_path('strage/upload/admin_images'), $filename);
+      $data['photo'] = $filename;
+    }
+    $data->save();
+
+    $notification = array(
+      'message' => 'Admin Profile Updated Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } // End Method 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+処理を実行した際、toastrのポップアップが画面に
+疎通されたらOK

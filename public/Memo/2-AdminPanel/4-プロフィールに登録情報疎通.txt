@@ -1,0 +1,105 @@
+
+
+4-プロフィールに登録情報疎通
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  // adminのプロフィールページ遷移のroute
+  Route::get('/admin/profile', [AdminController::class, 'AdminProfile'])
+    ->name('admin.profile');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\header.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <li>
+    <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile') }}">
+    <i class="bx bx-user fs-5"></i>
+      <span>Profile</span>
+    </a>
+  </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\AdminController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  // ★プロフィールページ疎通のコントローラー★
+  public function AdminProfile()
+  {
+    $id = Auth::user()->id;
+    $profileData = User::find($id);
+
+    return view(
+      'admin.admin_profile_view',
+      compact('profileData')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\admin\admin_profile_view.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+@extends('admin.admin_dashboard')
+@section('admin')
+
+↓↓追加↓↓
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+  <div class="row mb-3">
+    <div class="col-sm-3">
+      <h6 class="mb-0">Photo </h6>
+    </div>
+    <div class="col-sm-9 text-secondary">
+      <input class="form-control" name="photo" type="file" id="image">
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-sm-3">
+      <h6 class="mb-0"> </h6>
+    </div>
+    <div class="col-sm-9 text-secondary">
+      <img id="showImage" src="{{ (!empty($profileData->photo)) ? url('upload/admin_images/'.$profileData->photo) : url('upload/no_image.jpg') }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="80">
+    </div>
+  </div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#image').change(function(e) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        $('#showImage').attr('src', e.target.result);
+      }
+      reader.readAsDataURL(e.target.files['0']);
+    });
+  });
+</script>
+
+★コード解説★
+
+画像を選択した後、showImageの項目の画像情報が、
+変更予定の画像に切り替わっていたらOK

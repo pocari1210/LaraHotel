@@ -1,0 +1,56 @@
+
+4-Breezeマルチ認証③
+
+下記コマンドでミドルウェアファイル作成
+php artisan make:middleware AdminRole
+
+
+◆Kernelの編集◆
+
+ディレクトリ
+\app\Http\Kernel.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  protected $middlewareAliases = [
+
+    'roles' => \App\Http\Middleware\AdminRole::class,
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ミドルウェアファイル編集◆
+
+ディレクトリ
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    public function handle(Request $request, Closure $next, $role): Response
+    {
+        if($request->user()->role !== $role){
+            return redirect('dashboard');            
+        }
+        return $next($request);
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+↓↓admin権限でのログイン認証を追加↓↓
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  Route::get('/admin/dashboard', [AdminController::class, 'AdminDashboard'])
+    ->name('admin.dashboard');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+User権限でAdmin/dashboardのURLに遷移しようとした際、
+/dashboardページにリダイレクトされたらOK

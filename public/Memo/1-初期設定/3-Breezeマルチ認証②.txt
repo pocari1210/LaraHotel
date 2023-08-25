@@ -1,0 +1,36 @@
+
+
+3-Breezeマルチ認証②
+
+◆Authコントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Auth\AuthenticatedSessionController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+ 
+  public function store(LoginRequest $request): RedirectResponse
+  {
+    $request->authenticate();
+
+    $request->session()->regenerate();
+
+　　↓↓追記↓↓
+    $url = '';
+    if ($request->user()->role === 'admin') {
+      $url = '/admin/dashboard';
+    } elseif ($request->user()->role === 'user') {
+      $url = '/dashboard';
+    }
+
+    return redirect()->intended($url);
+　　↑↑追記↑↑
+
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+admin権限でログインした際、admin/dashboardのページに
+遷移がされたらOK
