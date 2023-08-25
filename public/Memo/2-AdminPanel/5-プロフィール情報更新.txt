@@ -1,0 +1,73 @@
+
+5-プロフィール情報更新
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  // adminのプロフィール情報更新のroute
+  Route::post('/admin/profile/store', [AdminController::class, 'AdminProfileStore'])
+    ->name('admin.profile.store');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\admin_profile_view.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <form action="{{ route('admin.profile.store') }}" method="post" enctype="multipart/form-data">
+    @csrf
+
+  <div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-9 text-secondary">
+
+      ↓↓buttonからsubmitへ変更↓↓
+      <input type="submit" class="btn btn-primary px-4" value="Save Changes" />
+    </div>
+  </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\AdminController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  // プロフィール情報更新のコントローラー
+  public function AdminProfileStore(Request $request)
+  {
+    $id = Auth::user()->id;
+    $data = User::find($id);
+    $data->name = $request->name;
+    $data->email = $request->email;
+    $data->phone = $request->phone;
+    $data->address = $request->address;
+
+    if ($request->file('photo')) {
+      $file = $request->file('photo');
+      $filename = date('YmdHi') . $file->getClientOriginalName();
+      $file->move(public_path('upload/admin_images'), $filename);
+      $data['photo'] = $filename;
+    }
+    $data->save();
+
+    return redirect()->back();
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+プロフィールページから、情報を更新できたらOK

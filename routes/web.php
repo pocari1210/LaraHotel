@@ -48,4 +48,8 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
   // adminのプロフィールページ遷移のroute
   Route::get('/admin/profile', [AdminController::class, 'AdminProfile'])
     ->name('admin.profile');
+
+  // adminのプロフィール情報更新のroute
+  Route::post('/admin/profile/store', [AdminController::class, 'AdminProfileStore'])
+    ->name('admin.profile.store');
 }); // End Admin Group Middleware 
