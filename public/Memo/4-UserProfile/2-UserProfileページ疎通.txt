@@ -1,0 +1,87 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Route::middleware('auth')->group(function () {
+
+  // UserProfileページ疎通のroute
+  Route::get('/profile', [UserController::class, 'UserProfile'])
+    ->name('user.profile');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\dashboard\user_dashboard.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+<!-- Service Details Area -->
+<div class="service-details-area pt-100 pb-70">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3">
+
+        ↓↓コンポーネントのimport↓↓
+        @include('frontend.dashboard.user_menu')
+      </div>
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆サイドバーメニュー◆
+
+ディレクトリ
+\resources\views\frontend\dashboard\user_menu.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+UserDashboardのサイドバーをコンポーネント化
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\UserController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+
+  public function UserProfile()
+  {
+    // loginしているUser情報のデータを取得
+    $id = Auth::user()->id;
+    $profileData = User::find($id);
+
+    return view(
+      'frontend.dashboard.edit_profile',
+      compact('profileData')
+    );
+  } // End Method   
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆サイドバーメニュー◆
+
+ディレクトリ
+\resources\views\frontend\dashboard\user_menu.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+UserDashboardのサイドバーをコンポーネント化
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
