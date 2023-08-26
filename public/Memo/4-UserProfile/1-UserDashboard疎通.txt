@@ -1,0 +1,30 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// UserDashboard疎通のroute
+Route::get('/dashboard', function () {
+  return view('frontend.dashboard.user_dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\dashboard\user_dashboard.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+User権限でログインをした後、
+UserDashboardのページに遷移がされたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
