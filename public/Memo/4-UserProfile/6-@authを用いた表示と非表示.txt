@@ -1,0 +1,40 @@
+
+
+6-@authを用いた表示と非表示
+
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\body\header.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @auth
+
+  <li>
+    <i class='bx bxs-user-pin'></i>
+    <a href="{{ route('dashboard') }}">Dashboard</a>
+  </li>
+
+  <li>
+    <i class='bx bxs-user-rectangle'></i>
+    <a href="{{ route('user.logout') }}">Logout</a>
+  </li>
+
+  @else
+
+  <li>
+    <i class='bx bxs-user-pin'></i>
+    <a href="{{ route('login') }}">Login</a>
+  </li>
+
+  <li>
+    <i class='bx bxs-user-rectangle'></i>
+    <a href="{{ route('register') }}">Register</a>
+  </li>
+
+  @endauth
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
