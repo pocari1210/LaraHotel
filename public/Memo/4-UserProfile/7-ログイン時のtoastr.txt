@@ -1,0 +1,34 @@
+
+7-ログイン時のtoastr
+
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\app\Http\Controllers\Auth\AuthenticatedSessionController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function store(LoginRequest $request): RedirectResponse
+  {
+
+    $id = Auth::user()->id;
+    $profileData = User::find($id);
+    $username = $profileData->name;
+
+    $notification = array(
+      'message' => 'User ' . $username . ' Login Successfully',
+      'alert-type' => 'info'
+    );
+
+    $url = '';
+    if ($request->user()->role === 'admin') {
+      $url = '/admin/dashboard';
+    } elseif ($request->user()->role === 'user') {
+      $url = '/dashboard';
+    }
+
+    return redirect()->intended($url)->with($notification);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
