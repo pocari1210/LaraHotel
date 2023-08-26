@@ -41,6 +41,14 @@ Route::middleware('auth')->group(function () {
   // ログアウトのroute
   Route::get('/user/logout', [UserController::class, 'UserLogout'])
     ->name('user.logout');
+
+  // パスワード変更ページ疎通のroute
+  Route::get('/user/change/password', [UserController::class, 'UserChangePassword'])
+    ->name('user.change.password');
+
+  // パスワード更新処理のroute
+  Route::post('/password/change/password', [UserController::class, 'ChangePasswordStore'])
+    ->name('password.change.store');
 });
 
 require __DIR__ . '/auth.php';
