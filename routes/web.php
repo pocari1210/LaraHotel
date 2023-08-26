@@ -33,6 +33,10 @@ Route::middleware('auth')->group(function () {
   // UserProfileページ疎通のroute
   Route::get('/profile', [UserController::class, 'UserProfile'])
     ->name('user.profile');
+
+  // UserProfileの更新処理のroute
+  Route::post('/profile/store', [UserController::class, 'UserStore'])
+    ->name('profile.store');
 });
 
 require __DIR__ . '/auth.php';
