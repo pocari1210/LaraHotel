@@ -1,0 +1,131 @@
+
+2-追加ページ遷移と保存処理
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Team All Route 
+  Route::controller(TeamController::class)->group(function () {
+
+    Route::get('/add/team', 'AddTeam')
+      ->name('add.team');
+
+    Route::post('/team/store', 'StoreTeam')
+      ->name('team.store');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元①)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <li> <a href="{{ route('add.team') }}"><i class='bx bx-radio-circle'></i>Add Team</a>
+  </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元②)◆
+
+ディレクトリ
+\resources\views\backend\team\all_team.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0 p-0">
+          <a href="{{ route('add.team') }}" class="btn btn-outline-primary px-5 radius-30"> Add Team</a>
+        </ol>
+      </nav>
+
+        <table id="example" class="table table-striped table-bordered" style="width:100%">
+          <thead>
+            <tr>
+              <th>Sl</th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Postion</th>
+              <th>Facebook</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($team as $key=> $item )
+            <tr>
+              <td>{{ $key+1 }}</td>
+              <td> <img src="{{ asset($item->image) }}" alt="" style="width:70px; height:40px;"> </td>
+              <td>{{ $item->name }}</td>
+              <td>{{ $item->postion }}</td>
+              <td>{{ $item->facebook }}</td>
+              <td>
+                <a href="" class="btn btn-warning px-3 radius-30"> Edit</a>
+                <a href="" class="btn btn-danger px-3 radius-30"> Delete</a>
+              </td>
+            </tr>
+            @foreach ($team as $key=> $item )
+          </tbody>
+        </table>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TeamController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AddTeam()
+  {
+    return view('backend.team.add_team');
+  } // End Method 
+
+  public function StoreTeam(Request $request)
+  {
+    $image = $request->file('image');
+    $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+    InterventionImage::make($image)->resize(550, 670)->save('storage/upload/team/' . $name_gen);
+    $save_url = 'storage/upload/team/' . $name_gen;
+
+    Team::insert([
+
+      'name' => $request->name,
+      'postion' => $request->postion,
+      'facebook' => $request->facebook,
+      'image' => $save_url,
+      'created_at' => Carbon::now(),
+    ]);
+
+    $notification = array(
+      'message' => 'Team Data Inserted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('all.team')->with($notification);
+  } // End Method 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\team\add_team.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+追加ページから保存処理を行うことができたらOK
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
