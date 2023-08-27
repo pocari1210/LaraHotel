@@ -8,6 +8,7 @@ use Intervention;
 use Carbon\Carbon;
 use App\Models\RoomType;
 use App\Models\BookArea;
+use App\Models\Room;
 
 class RoomTypeController extends Controller
 {
@@ -28,9 +29,13 @@ class RoomTypeController extends Controller
 
   public function RoomTypeStore(Request $request)
   {
-    RoomType::insert([
+    $roomtype_id =  RoomType::insertGetId([
       'name' => $request->name,
       'created_at' => Carbon::now(),
+    ]);
+
+    Room::insert([
+      'roomtype_id' => $roomtype_id,
     ]);
 
     $notification = array(
