@@ -48,4 +48,62 @@ class TeamController extends Controller
 
     return redirect()->route('all.team')->with($notification);
   } // End Method 
+
+  public function EditTeam($id)
+  {
+    $team = Team::findOrFail($id);
+
+    return view(
+      'backend.team.edit_team',
+      compact('team')
+    );
+  } // End Method 
+
+  public function UpdateTeam(Request $request)
+  {
+    $team_id = $request->id;
+
+    // 画像の変更を含む場合の処理
+    if ($request->file('image')) {
+
+      $image = $request->file('image');
+      $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+      InterventionImage::make($image)->resize(550, 670)->save('storage/upload/team/' . $name_gen);
+      $save_url = 'storage/upload/team/' . $name_gen;
+
+      Team::findOrFail($team_id)->update([
+
+        'name' => $request->name,
+        'postion' => $request->postion,
+        'facebook' => $request->facebook,
+        'image' => $save_url,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Team Updated With Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.team')->with($notification);
+
+      // 画像の変更を含まない場合の処理
+    } else {
+
+      Team::findOrFail($team_id)->update([
+        'name' => $request->name,
+        'postion' => $request->postion,
+        'facebook' => $request->facebook,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Team Updated Without Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.team')->with($notification);
+    } // End Eles 
+
+  } // End Method   
 }
