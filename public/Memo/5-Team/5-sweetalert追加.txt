@@ -1,0 +1,75 @@
+
+5-sweetalert追加
+
+◆ビューの編集◆
+
+ディレクトリ
+C:\xampp\htdocs\LaraHotel\cms\resources\views\backend\team\all_team.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <td>
+    <a href="{{ route('edit.team',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+
+    ↓↓id情報追記↓↓
+    <a href="{{ route('delete.team',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+  </td>
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ベーステンプレート◆
+
+ディレクトリ
+\resources\views\admin\admin_dashboard.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <!-- sweetalert JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="{{asset('backend/assets/js/code.js')}}"></script>
+  <!-- sweetalert JS -->
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆JSファイル新規作成◆
+
+ディレクトリ
+\public\backend\assets\js\code.js
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+$(function () {
+  $(document).on('click', '#delete', function (e) {
+    e.preventDefault();
+    var link = $(this).attr("href");
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Delete This Data?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = link
+        Swal.fire(
+          'Deleted!',
+          'Your file has been deleted.',
+          'success'
+        )
+      }
+    })
+  });
+
+});
+
+★コード解説★
+$(document).on('click', '#delete', function (e)の
+#deleteは、all_team.blade.phpのdeleteボタンに追記したid情報と
+紐づいている
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
