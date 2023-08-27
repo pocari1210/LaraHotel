@@ -1,0 +1,92 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Route::middleware('auth')->group(function () {
+
+  // パスワード変更ページ疎通のroute
+  Route::get('/user/change/password', [UserController::class, 'UserChangePassword'])
+    ->name('user.change.password');
+
+  // パスワード更新処理のroute
+  Route::post('/password/change/password', [UserController::class, 'ChangePasswordStore'])
+    ->name('password.change.store');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\dashboard\user_menu.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <li>
+    <a href="{{ route('user.change.password') }}">Change Password</a>
+  </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\UserController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function UserChangePassword()
+  {
+    return view('frontend.dashboard.user_change_password');
+  } // End Method
+
+  public function ChangePasswordStore(Request $request)
+  {
+    // Validation 
+    $request->validate([
+      'old_password' => 'required',
+      'new_password' => 'required|confirmed'
+    ]);
+
+    if (!Hash::check($request->old_password, auth::user()->password)) {
+
+      $notification = array(
+        'message' => 'Old Password Does not Match!',
+        'alert-type' => 'error'
+      );
+
+      return back()->with($notification);
+    }
+
+    /// Update The New Password 
+    User::whereId(auth::user()->id)->update([
+      'password' => Hash::make($request->new_password)
+    ]);
+
+    $notification = array(
+      'message' => 'Password Change Successfully',
+      'alert-type' => 'success'
+    );
+
+    return back()->with($notification);
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\dashboard\user_change_password.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+パスワードを変更できたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

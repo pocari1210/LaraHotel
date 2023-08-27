@@ -1,0 +1,163 @@
+
+
+下記コマンドでコントローラーファイル新規作成
+php artisan make:controller Backend/TeamController
+
+下記コマンドでModelとtableを新規作成
+php artisan make:model Team -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\Team.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Team extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_08_26_225435_create_teams_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('teams', function (Blueprint $table) {
+      $table->id();
+      $table->string('image');
+      $table->string('name');
+      $table->string('postion');
+      $table->string('facebook');
+      $table->timestamps();
+    });
+  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Http\Controllers\Backend\TeamController;
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Team All Route 
+  Route::controller(TeamController::class)->group(function () {
+
+    Route::get('/all/team', 'AllTeam')
+      ->name('all.team');
+  });
+}); // End Admin Group Middleware 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ベーステンプレート編集◆
+
+ディレクトリ
+\resources\views\admin\admin_dashboard.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <!-- dataTables CSS -->
+  <link href="{{asset('backend/assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
+  <!-- dataTables CSS -->
+
+  <!--datatable JS-->
+  <script src="{{asset('backend/assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
+  <script src="{{asset('backend/assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+  <script>
+    $(document).ready(function() {
+      $('#example').DataTable();
+    });
+  </script>
+  <!--datatable JS-->
+
+★コード解説★
+datatableをimportしている
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-category"></i>
+        </div>
+        <div class="menu-title">Manage Teams</div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('all.team') }}"><i class='bx bx-radio-circle'></i>All Team</a>
+        </li>
+        <li> <a href="app-chat-box.html"><i class='bx bx-radio-circle'></i>Add Team</a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TeamController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AllTeam()
+  {
+
+    // latest()で最新順にしている
+    $team = Team::latest()->get();
+
+    return view(
+      'backend.team.all_team',
+      compact('team')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TeamController.php
+
+resources/views/backend/team/all_team.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AllTeam()
+  {
+
+    // latest()で最新順にしている
+    $team = Team::latest()->get();
+
+    return view(
+      'backend.team.all_team',
+      compact('team')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+teamの一覧ページが疎通できていたらOK

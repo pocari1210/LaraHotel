@@ -1,0 +1,120 @@
+
+3-編集ページ遷移と更新処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Team All Route 
+  Route::controller(TeamController::class)->group(function () {
+
+    Route::get('/edit/team/{id}', 'EditTeam')
+      ->name('edit.team');
+
+    Route::post('/team/update', 'UpdateTeam')
+      ->name('team.update');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\team\all_team.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <td> <img src="{{ asset($item->image) }}" alt="" style="width:70px; height:40px;"> </td>
+  <td>{{ $item->name }}</td>
+  <td>{{ $item->postion }}</td>
+  <td>{{ $item->facebook }}</td>
+  <td>
+
+    ↓↓route先追記↓↓
+    <a href="{{ route('edit.team',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TeamController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function EditTeam($id)
+  {
+    $team = Team::findOrFail($id);
+
+    return view(
+      'backend.team.edit_team',
+      compact('team')
+    );
+  } // End Method 
+
+  public function UpdateTeam(Request $request)
+  {
+    $team_id = $request->id;
+
+    // 画像の変更を含む場合の処理
+    if ($request->file('image')) {
+
+      $image = $request->file('image');
+      $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+      InterventionImage::make($image)->resize(550, 670)->save('storage/upload/team/' . $name_gen);
+      $save_url = 'storage/upload/team/' . $name_gen;
+
+      Team::findOrFail($team_id)->update([
+
+        'name' => $request->name,
+        'postion' => $request->postion,
+        'facebook' => $request->facebook,
+        'image' => $save_url,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Team Updated With Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.team')->with($notification);
+
+      // 画像の変更を含まない場合の処理
+    } else {
+
+      Team::findOrFail($team_id)->update([
+        'name' => $request->name,
+        'postion' => $request->postion,
+        'facebook' => $request->facebook,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Team Updated Without Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.team')->with($notification);
+    } // End Eles 
+
+  } // End Method   
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\team\edit_team.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+編集ページより、更新処理が行えたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

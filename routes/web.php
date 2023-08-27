@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Backend\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,14 +24,32 @@ use App\Http\Controllers\UserController;
 // トップページのroute
 Route::get('/', [UserController::class, 'Index']);
 
+// UserDashboard疎通のroute
 Route::get('/dashboard', function () {
-  return view('dashboard');
+  return view('frontend.dashboard.user_dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-  Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-  Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-  Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+  // UserProfileページ疎通のroute
+  Route::get('/profile', [UserController::class, 'UserProfile'])
+    ->name('user.profile');
+
+  // UserProfileの更新処理のroute
+  Route::post('/profile/store', [UserController::class, 'UserStore'])
+    ->name('profile.store');
+
+  // ログアウトのroute
+  Route::get('/user/logout', [UserController::class, 'UserLogout'])
+    ->name('user.logout');
+
+  // パスワード変更ページ疎通のroute
+  Route::get('/user/change/password', [UserController::class, 'UserChangePassword'])
+    ->name('user.change.password');
+
+  // パスワード更新処理のroute
+  Route::post('/password/change/password', [UserController::class, 'ChangePasswordStore'])
+    ->name('password.change.store');
 });
 
 require __DIR__ . '/auth.php';
@@ -64,4 +83,30 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
   // パスワード更新処理のroute    
   Route::post('/admin/password/update', [AdminController::class, 'AdminPasswordUpdate'])
     ->name('admin.password.update');
+}); // End Admin Group Middleware 
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Team All Route 
+  Route::controller(TeamController::class)->group(function () {
+
+    Route::get('/all/team', 'AllTeam')
+      ->name('all.team');
+
+    Route::get('/add/team', 'AddTeam')
+      ->name('add.team');
+
+    Route::post('/team/store', 'StoreTeam')
+      ->name('team.store');
+
+    Route::get('/edit/team/{id}', 'EditTeam')
+      ->name('edit.team');
+
+    Route::post('/team/update', 'UpdateTeam')
+      ->name('team.update');
+
+    Route::get('/delete/team/{id}', 'DeleteTeam')
+      ->name('delete.team');
+  });
 }); // End Admin Group Middleware 
