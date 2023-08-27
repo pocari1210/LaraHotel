@@ -1,0 +1,64 @@
+
+4-削除処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Team All Route 
+  Route::controller(TeamController::class)->group(function () {
+
+    Route::get('/delete/team/{id}', 'DeleteTeam')
+      ->name('delete.team');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\team\all_team.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <td>
+    <a href="{{ route('edit.team',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+
+    ↓↓route先追記↓↓
+    <a href="{{ route('delete.team',$item->id) }}" class="btn btn-danger px-3 radius-30"> Delete</a>
+  </td>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TeamController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function DeleteTeam($id)
+  {
+    $item = Team::findOrFail($id);
+    $img = $item->image;
+    unlink($img);
+
+    Team::findOrFail($id)->delete();
+
+    $notification = array(
+      'message' => 'Team Image Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  }   // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+Deleteボタンを押して、削除処理が実行出来たらOK

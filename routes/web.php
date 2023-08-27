@@ -105,5 +105,8 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/team/update', 'UpdateTeam')
       ->name('team.update');
+
+    Route::get('/delete/team/{id}', 'DeleteTeam')
+      ->name('delete.team');
   });
 }); // End Admin Group Middleware 
