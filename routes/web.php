@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Backend\TeamController;
+use App\Http\Controllers\Backend\RoomTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,5 +119,12 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/book/area/update', 'BookAreaUpdate')
       ->name('book.area.update');
+  });
+
+  /// RoomType All Route 
+  Route::controller(RoomTypeController::class)->group(function () {
+
+    Route::get('/room/type/list', 'RoomTypeList')
+      ->name('room.type.list');
   });
 }); // End Admin Group Middleware 
