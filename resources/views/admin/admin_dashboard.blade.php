@@ -94,6 +94,8 @@
   <script src="{{asset('backend/assets/js/code.js')}}"></script>
   <!-- sweetalert JS -->
 
+  <script src="{{asset('backend/assets/js/validate.min.js')}}"></script>
+
   <!-- toastr JS -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
