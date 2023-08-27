@@ -1,0 +1,112 @@
+
+下記コマンドでmodelとtableを新規作成
+php artisan make:model BookArea -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\BookArea.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class BookArea extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_08_27_065716_create_book_areas_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('book_areas', function (Blueprint $table) {
+      $table->id();
+      $table->string('image')->nullable();
+      $table->string('short_title')->nullable();
+      $table->string('main_title')->nullable();
+      $table->text('short_desc')->nullable();
+      $table->string('link_url')->nullable();
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Book Area All Route 
+  Route::controller(TeamController::class)->group(function () {
+
+    Route::get('/book/area', 'BookArea')
+      ->name('book.area');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-category"></i>
+        </div>
+        <div class="menu-title">Manage Book Area </div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('book.area') }}"><i class='bx bx-radio-circle'></i>Update BookArea </a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TeamController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  //  ==================== Book Area All Methods =============
+
+  public function BookArea()
+  {
+    $book = BookArea::find(1);
+
+    return view(
+      'backend.bookarea.book_area',
+      compact('book')
+    );
+  }  // End Method   
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+resources/views/backend/bookarea/book_area.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Update Book Areaのページが疎通できたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
