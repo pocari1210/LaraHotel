@@ -1,0 +1,124 @@
+
+3-Roomの編集ページ疎通
+
+下記コマンドでコントローラーファイル新規作成
+php artisan make:controller Backend/RoomController
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Http\Controllers\Backend\RoomController;
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Room All Route 
+  Route::controller(RoomController::class)->group(function () {
+
+    Route::get('/edit/room/{id}', 'EditRoom')
+      ->name('edit.room');
+  });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\allroom\roomtype\view_roomtype.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <td>
+    @foreach ($rooms as $room)
+    <a href="{{ route('edit.room',$room->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+    <a href=" " class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+    @endforeach
+  </td>
+
+★コード解説★
+roomsテーブルのroomtype_idカラムと
+rooms_typeテーブルのidカラムが
+紐づいている
+
+※紐づいていない場合、ボタンが表示されない
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class RoomController extends Controller
+{
+  public function EditRoom($id)
+  {
+    $editData = Room::find($id);
+
+    return view(
+      'backend.allroom.rooms.edit_rooms',
+      compact('editData')
+    );
+  } //End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\app\Models\Room.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Room extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+
+  public function type()
+  {
+    return $this->belongsTo(RoomType::class, 'roomtype_id', 'id');
+  }
+}
+
+RoomモデルがRoomTypeに対し、リレーションを行っている
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\allroom\rooms\edit_rooms.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div class="col-md-4">
+    <label for="input1" class="form-label">Room Type Name </label>
+
+    ↓↓roomモデルでリレーションを行ったtypeメソッドを用いて,
+        nameカラムの情報を表示させている
+    <input type="text" name="roomtype_id" class="form-control" id="input1" value="{{ $editData['type']['name'] }}">
+  </div>
+
+  <div class="col-md-4">
+    <label for="input2" class="form-label">Total Adult</label>
+    <input type="text" name="total_adult" class="form-control" id="input2" value="{{ $editData->total_adult }}">
+  </div>
+
+  <div class="col-md-4">
+    <label for="input2" class="form-label">Total Child </label>
+    <input type="text" name="total_child" class="form-control" id="input2" value="{{ $editData->total_child }}">
+  </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+編集ページを疎通することができ、
+DBに登録された情報が表示されていたらOK
