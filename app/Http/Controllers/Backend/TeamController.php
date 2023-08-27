@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use InterventionImage;
 use Carbon\Carbon;
 use App\Models\Team;
+use App\Models\BookArea;
 
 class TeamController extends Controller
 {
@@ -122,4 +123,16 @@ class TeamController extends Controller
 
     return redirect()->back()->with($notification);
   }   // End Method 
+
+  //  ==================== Book Area All Methods =============
+
+  public function BookArea()
+  {
+    $book = BookArea::find(1);
+
+    return view(
+      'backend.bookarea.book_area',
+      compact('book')
+    );
+  }  // End Method   
 }
