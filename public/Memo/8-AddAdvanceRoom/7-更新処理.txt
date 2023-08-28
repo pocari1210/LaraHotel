@@ -1,27 +1,42 @@
-<?php
 
-namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use InterventionImage;
-use Carbon\Carbon;
-use App\Models\Room;
-use App\Models\Facility;
-use App\Models\MultiImage;
 
-class RoomController extends Controller
-{
-  public function EditRoom($id)
-  {
-    $editData = Room::find($id);
-    $basic_facility = Facility::where('rooms_id', $id)->get();
 
-    return view(
-      'backend.allroom.rooms.edit_rooms',
-      compact('editData', 'basic_facility')
-    );
-  } //End Method 
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Room All Route 
+  Route::controller(RoomController::class)->group(function () {
+
+    Route::post('/update/room/{id}', 'UpdateRoom')
+      ->name('update.room');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <form class="row g-3" action="{{ route('update.room',$editData->id) }}" 
+　　method="post" enctype="multipart/form-data">
+    @csrf
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
 
   public function UpdateRoom(Request $request, $id)
   {
@@ -44,7 +59,7 @@ class RoomController extends Controller
     if ($request->file('image')) {
       $image = $request->file('image');
       $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
-      InterventionImage::make($image)->resize(550, 850)->save('storage/upload/roomimg/' . $name_gen);
+      Image::make($image)->resize(550, 850)->save('storage/upload/roomimg/' . $name_gen);
       $room['image'] = $name_gen;
     }
 
@@ -64,11 +79,7 @@ class RoomController extends Controller
       Facility::where('rooms_id', $id)->delete();
       $facilities = Count($request->facility_name);
       for ($i = 0; $i < $facilities; $i++) {
-
-        // オブジェクト(インスタンス)を新規作成
         $fcount = new Facility();
-
-        // Roomテーブルのid情報を取得
         $fcount->rooms_id = $room->id;
         $fcount->facility_name = $request->facility_name[$i];
         $fcount->save();
@@ -80,26 +91,16 @@ class RoomController extends Controller
     if ($room->save()) {
       $files = $request->multi_img;
       if (!empty($files)) {
-
-        // toArrayメソッドで配列に変換
-        $subimage = MultiImage::where('rooms_id', $id)
-          ->get()->toArray();
-
+        $subimage = MultiImage::where('rooms_id', $id)->get()->toArray();
         MultiImage::where('rooms_id', $id)->delete();
       }
       if (!empty($files)) {
         foreach ($files as $file) {
           $imgName = date('YmdHi') . $file->getClientOriginalName();
           $file->move('storage/upload/roomimg/multi_img/', $imgName);
-
-          // MultiImageテーブルのmulti_imgカラムに
-          // $imgNameを代入
           $subimage['multi_img'] = $imgName;
 
-          // オブジェクト(インスタンス)を新規作成
           $subimage = new MultiImage();
-
-          // Roomテーブルのid情報を取得
           $subimage->rooms_id = $room->id;
           $subimage->multi_img = $imgName;
           $subimage->save();
@@ -114,4 +115,5 @@ class RoomController extends Controller
 
     return redirect()->back()->with($notification);
   } //End Method 
-}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

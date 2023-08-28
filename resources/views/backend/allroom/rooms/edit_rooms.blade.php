@@ -39,7 +39,8 @@
                   <div class="card">
                     <div class="card-body p-4">
                       <h5 class="mb-4">Update Room </h5>
-                      <form class="row g-3">
+                      <form class="row g-3" action="{{ route('update.room',$editData->id) }}" method="post" enctype="multipart/form-data">
+                        @csrf
                         <div class="col-md-4">
                           <label for="input1" class="form-label">Room Type Name </label>
                           <input type="text" name="roomtype_id" class="form-control" id="input1" value="{{ $editData['type']['name'] }}">
@@ -69,17 +70,22 @@
                           <div class="row" id="preview_img"></div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                           <label for="input1" class="form-label">Room Price </label>
                           <input type="text" name="price" class="form-control" id="input1" value="{{ $editData->price }}">
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                          <label for="input2" class="form-label">Size </label>
+                          <input type="text" name="size" class="form-control" id="input2" value="{{ $editData->size }}">
+                        </div>
+
+                        <div class="col-md-3">
                           <label for="input2" class="form-label">Discount ( % )</label>
                           <input type="text" name="discount" class="form-control" id="input2" value="{{ $editData->discount }}">
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                           <label for="input2" class="form-label">Room Capacity </label>
                           <input type="text" name="room_capacity" class="form-control" id="input2" value="{{ $editData->room_capacity }}">
                         </div>
@@ -88,8 +94,8 @@
                           <label for="input7" class="form-label">Room View </label>
                           <select name="view" id="input7" class="form-select">
                             <option selected="">Choose...</option>
-                            <option value="Sea View">Sea View </option>
-                            <option value="Hill View">Hill View </option>
+                            <option value="Sea View" {{ $editData->view == 'Sea View'?'selected':''}}>Sea View </option>
+                            <option value="Hill View" {{ $editData->view == 'Hill View'?'selected':''}}>Hill View </option>
                           </select>
                         </div>
 
@@ -97,9 +103,9 @@
                           <label for="input7" class="form-label">Bed Style</label>
                           <select name="bed_style" id="input7" class="form-select">
                             <option selected="">Choose...</option>
-                            <option value="Queen Bed"> Queen Bed </option>
-                            <option value="Twin Bed">Twin Bed </option>
-                            <option value="King Bed">King Bed </option>
+                            <option value="Queen Bed" {{ $editData->bed_style == 'Queen Bed'?'selected':''}}> Queen Bed </option>
+                            <option value="Twin Bed" {{ $editData->bed_style == 'Twin Bed'?'selected':''}}>Twin Bed </option>
+                            <option value="King Bed" {{ $editData->bed_style == 'King Bed'?'selected':''}}>King Bed </option>
                           </select>
                         </div>
 
@@ -110,7 +116,7 @@
 
                         <div class="col-md-12">
                           <label for="input11" class="form-label"> Description </label>
-                          <textarea name="description" class="form-control" id="myeditorinstance">{!! $editData->short_desc !!}</textarea>
+                          <textarea name="description" class="form-control" id="myeditorinstance">{!! $editData->description !!}</textarea>
                         </div>
 
                         <div class="row mt-2">
@@ -139,8 +145,8 @@
                                 </div>
                                 <div class="col-md-4">
                                   <div class="form-group" style="padding-top: 30px;">
-                                    <a class="btn btn-success addeventmore"><i class="fa fa-plus-circle"></i></a>
-                                    <span class="btn btn-danger btn-sm removeeventmore"><i class="fa fa-minus-circle"></i></span>
+                                    <a class="btn btn-success addeventmore"><i class="lni lni-circle-plus"></i></a>
+                                    <span class="btn btn-danger btn-sm removeeventmore"><i class="lni lni-circle-minus"></i></span>
                                   </div>
                                 </div>
                               </div>
@@ -153,7 +159,7 @@
                               <div class="row add_item">
                                 <div class="col-md-6">
                                   <label for="basic_facility_name" class="form-label">Room Facilities </label>
-                                  <select name="basic_facility_name[]" id="basic_facility_name" class="form-control">
+                                  <select name="facility_name[]" id="basic_facility_name" class="form-control">
                                     <option value="">Select Facility</option>
                                     <option value="Complimentary Breakfast">Complimentary Breakfast</option>
                                     <option value="32/42 inch LED TV"> 32/42 inch LED TV</option>
@@ -173,6 +179,7 @@
                                 <div class="col-md-6">
                                   <div class="form-group" style="padding-top: 30px;">
                                     <a class="btn btn-success addeventmore"><i class="lni lni-circle-plus"></i></a>
+                                    <span class="btn btn-danger btn-sm removeeventmore"><i class="lni lni-minus-circle"></i></span>
                                   </div>
                                 </div>
                               </div>
@@ -186,7 +193,7 @@
 
                         <div class="col-md-12">
                           <div class="d-md-flex d-grid align-items-center gap-3">
-                            <button type="button" class="btn btn-primary px-4">Submit</button>
+                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
                           </div>
                         </div>
                       </form>
@@ -259,7 +266,7 @@
         <div class="row">
           <div class="form-group col-md-6">
             <label for="basic_facility_name">Room Facilities</label>
-            <select name="basic_facility_name[]" id="basic_facility_name" class="form-control">
+            <select name="facility_name[]" id="basic_facility_name" class="form-control">
               <option value="">Select Facility</option>
               <option value="Complimentary Breakfast">Complimentary Breakfast</option>
               <option value="32/42 inch LED TV"> 32/42 inch LED TV</option>
