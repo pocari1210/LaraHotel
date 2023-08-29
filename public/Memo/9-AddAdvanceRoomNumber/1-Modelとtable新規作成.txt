@@ -1,0 +1,43 @@
+
+1-Modelとtable新規作成
+
+下記コマンドでModelとTable新規作成
+php artisan make:model RoomNumber -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\RoomNumber.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class RoomNumber extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Tableの編集◆
+
+ディレクトリ
+C:\xampp\htdocs\LaraHotel\cms\database\migrations\2023_08_29_151305_create_room_numbers_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('room_numbers', function (Blueprint $table) {
+      $table->id();
+      $table->integer('rooms_id');
+      $table->integer('room_type_id');
+      $table->string('room_no')->nullable();
+      $table->string('status')->nullable();
+      $table->timestamps();
+    });
+  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
