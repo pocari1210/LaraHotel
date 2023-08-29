@@ -1,0 +1,83 @@
+
+9-MultiImage削除処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Room All Route 
+  Route::controller(RoomController::class)->group(function () {
+
+    Route::get('/multi/image/delete/{id}', 'MultiImageDelete')
+      ->name('multi.image.delete');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function MultiImageDelete($id)
+  {
+
+    $deletedata = MultiImage::where('id', $id)->first();
+
+    if ($deletedata) {
+
+      $imagePath = $deletedata->multi_img;
+
+      // Check if the file exists before unlinking 
+      if (file_exists($imagePath)) {
+        unlink($imagePath);
+        echo "Image Unlinked Successfully";
+      } else {
+        echo "Image does not exist";
+      }
+
+      //  Delete the record form database 
+
+      MultiImage::where('id', $id)->delete();
+    }
+
+    $notification = array(
+      'message' => 'Multi Image Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } //End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\allroom\rooms\edit_rooms.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div class="col-md-6">
+    <label for="input4" class="form-label">Gallery Image </label>
+    <input type="file" name="multi_img[]" class="form-control mb-3" multiple id="multiImg" accept="image/jpeg, image/jpg, image/gif, image/png">
+
+    @foreach ($multiimgs as $item)
+    <img src="{{ (!empty($item->multi_img)) ? 
+      url('storage/upload/roomimg/multi_img/'.$item->multi_img) : url('storage/upload/no_image.jpg') }}" alt="MultiImage" class="bg-primary" width="60">
+
+    ↓↓routeの追記↓↓
+    <a href="{{ route('multi.image.delete',$item->id) }}"><i class="lni lni-close"></i> </a>
+    @endforeach
+
+    <div class="row" id="preview_img"></div>
+  </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+edit_rooms.blade.phpでMultiImageを削除することができたらOK
