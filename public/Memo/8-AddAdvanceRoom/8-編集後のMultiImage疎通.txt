@@ -1,0 +1,50 @@
+
+
+8-編集後のMultiImage疎通
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function EditRoom($id)
+  {
+    $editData = Room::find($id);
+
+    ↓↓追記↓↓
+    $multiimgs = MultiImage::where('rooms_id', $id)->get();
+    $basic_facility = Facility::where('rooms_id', $id)->get();
+
+    return view(
+      'backend.allroom.rooms.edit_rooms',
+      compact('editData', 'multiimgs', 'basic_facility')
+    );
+  } //End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集◆
+
+ディレクトリ
+\resources\views\backend\allroom\rooms\edit_rooms.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div class="col-md-6">
+    <label for="input4" class="form-label">Gallery Image </label>
+    <input type="file" name="multi_img[]" class="form-control mb-3" multiple id="multiImg" accept="image/jpeg, image/jpg, image/gif, image/png">
+
+    ↓↓追記↓↓
+    @foreach ($multiimgs as $item)
+    <img src="{{ (!empty($item->multi_img)) ? 
+      url('storage/upload/roomimg/multi_img/'.$item->multi_img) : url('storage/upload/no_image.jpg') }}" alt="MultiImage" class="bg-primary" width="60">
+    <a href=""><i class="lni lni-close"></i> </a>
+    @endforeach
+    ↑↑追記↑↑
+
+    <div class="row" id="preview_img"></div>
+  </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
