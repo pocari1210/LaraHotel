@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\Models\Room;
 use App\Models\Facility;
 use App\Models\MultiImage;
+use App\Models\RoomNumber;
 
 class RoomController extends Controller
 {
@@ -140,6 +141,24 @@ class RoomController extends Controller
 
     $notification = array(
       'message' => 'Multi Image Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } //End Method 
+
+  public function StoreRoomNumber(Request $request, $id)
+  {
+
+    $data = new RoomNumber();
+    $data->rooms_id = $id;
+    $data->room_type_id = $request->room_type_id;
+    $data->room_no = $request->room_no;
+    $data->status = $request->status;
+    $data->save();
+
+    $notification = array(
+      'message' => 'Room Number Added Successfully',
       'alert-type' => 'success'
     );
 
