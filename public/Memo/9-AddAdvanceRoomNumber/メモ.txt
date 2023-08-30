@@ -1,0 +1,97 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Room All Route 
+  Route::controller(RoomController::class)->group(function () {
+
+    Route::get('/edit/roomno/{id}', 'EditRoomNumber')
+      ->name('edit.roomno');
+
+    Route::post('/update/roomno/{id}', 'UpdateRoomNumber')
+      ->name('update.roomno');
+
+    Route::get('/delete/roomno/{id}', 'DeleteRoomNumber')
+      ->name('delete.roomno');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\allroom\rooms\edit_rooms.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($allroomNo as $item)
+  <tr>
+    <td>{{ $item->room_no }}</td>
+    <td>{{ $item->status }}</td>
+    <td>
+
+      ↓↓routeの追記↓↓
+      <a href="{{ route('edit.roomno',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+      <a href="{{ route('delete.roomno',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+      ↑↑routeの追記↑↑
+
+    </td>
+  </tr>
+  @endforeach
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function EditRoomNumber($id)
+  {
+    $editroomno = RoomNumber::find($id);
+
+    return view(
+      'backend.allroom.rooms.edit_room_no',
+      compact('editroomno')
+    );
+  } //End Method 
+
+  public function UpdateRoomNumber(Request $request, $id)
+  {
+
+    $data = RoomNumber::find($id);
+    $data->room_no = $request->room_no;
+    $data->status = $request->status;
+    $data->save();
+
+    $notification = array(
+      'message' => 'Room Number Updated Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('room.type.list')->with($notification);
+  } //End Method 
+
+  public function DeleteRoomNumber($id)
+  {
+
+    RoomNumber::find($id)->delete();
+
+    $notification = array(
+      'message' => 'Room Number Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('room.type.list')->with($notification);
+  } //End Method
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
