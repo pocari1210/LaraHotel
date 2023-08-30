@@ -18,4 +18,14 @@ class FrontendRoomController extends Controller
       compact('rooms')
     );
   } // End Method 
+
+  public function RoomDetailsPage($id)
+  {
+    $roomdetails = Room::find($id);
+
+    return view(
+      'frontend.room.room_details',
+      compact('roomdetails')
+    );
+  } // End Method 
 }

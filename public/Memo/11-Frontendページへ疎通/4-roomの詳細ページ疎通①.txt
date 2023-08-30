@@ -1,0 +1,70 @@
+
+4-roomの詳細ページ疎通①
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Room All Route 
+Route::controller(FrontendRoomController::class)->group(function () {
+
+
+Route::get('/room/details/{id}', 'RoomDetailsPage');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\room\all_rooms.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div class="col-lg-4 col-md-6">
+    <div class="room-card">
+      ↓↓routeの追記↓↓
+      <a href="{{ url('room/details/'.$item->id) }}">
+        <img src="{{ asset('storage/upload/roomimg/'.$item->image ) }}" alt="Images" style="width: 550px; height:300px;">
+      </a>
+      <div class="content">
+
+      ↓↓routeの追記↓↓
+        <h6><a href="{{ url('room/details/'.$item->id) }}">{{ $item['type']['name'] }}</a></h6>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\FrontendRoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function RoomDetailsPage($id)
+  {
+    $roomdetails = Room::find($id);
+
+    return view(
+      'frontend.room.room_details',
+      compact('roomdetails')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\room\room_details.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+詳細ページが疎通されていたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
