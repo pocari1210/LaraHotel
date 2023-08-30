@@ -1,0 +1,64 @@
+
+3-RoomNumber疎通
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\allroom\rooms\edit_rooms.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <table class="table mb-0 table-striped" id="roomview">
+    <thead>
+      <tr>
+        <th scope="col">Room Number</th>
+        <th scope="col">Status</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      ↓↓追記↓↓
+      @foreach ($allroomNo as $item)
+      <tr>
+        <td>{{ $item->room_no }}</td>
+        <td>{{ $item->status }}</td>
+        <td>
+          <a href=" " class="btn btn-warning px-3 radius-30"> Edit</a>
+          <a href=" " class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+        </td>
+      </tr>
+      @endforeach
+      ↑↑追記↑↑
+
+    </tbody>
+  </table>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function EditRoom($id)
+  {
+    $editData = Room::find($id);
+    $multiimgs = MultiImage::where('rooms_id', $id)->get();
+    $basic_facility = Facility::where('rooms_id', $id)->get();
+
+    ↓↓追記↓↓
+    $allroomNo = RoomNumber::where('rooms_id', $id)->get();
+
+    return view(
+      'backend.allroom.rooms.edit_rooms',
+      compact('editData', 'multiimgs', 'basic_facility', 'allroomNo')
+    );
+  } //End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+登録されたRoomNumberがedit_rooms.blade.phpに疎通できていれば
+OK

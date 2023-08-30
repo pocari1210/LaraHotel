@@ -18,10 +18,11 @@ class RoomController extends Controller
     $editData = Room::find($id);
     $multiimgs = MultiImage::where('rooms_id', $id)->get();
     $basic_facility = Facility::where('rooms_id', $id)->get();
+    $allroomNo = RoomNumber::where('rooms_id', $id)->get();
 
     return view(
       'backend.allroom.rooms.edit_rooms',
-      compact('editData', 'multiimgs', 'basic_facility')
+      compact('editData', 'multiimgs', 'basic_facility', 'allroomNo')
     );
   } //End Method 
 
