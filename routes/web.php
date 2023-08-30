@@ -158,5 +158,8 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/delete/roomno/{id}', 'DeleteRoomNumber')
       ->name('delete.roomno');
+
+    Route::get('/delete/room/{id}', 'DeleteRoom')
+      ->name('delete.room');
   });
 }); // End Admin Group Middleware 

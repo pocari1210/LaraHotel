@@ -10,6 +10,7 @@ use App\Models\Room;
 use App\Models\Facility;
 use App\Models\MultiImage;
 use App\Models\RoomNumber;
+use App\Models\RoomType;
 
 class RoomController extends Controller
 {
@@ -71,7 +72,8 @@ class RoomController extends Controller
         // オブジェクト(インスタンス)を新規作成
         $fcount = new Facility();
 
-        // Roomテーブルのid情報を取得
+        // Facilityモデルのrooms_idカラムとRoomモデルのidカラムを
+        // 紐づけている
         $fcount->rooms_id = $room->id;
         $fcount->facility_name = $request->facility_name[$i];
         $fcount->save();
@@ -102,8 +104,10 @@ class RoomController extends Controller
           // オブジェクト(インスタンス)を新規作成
           $subimage = new MultiImage();
 
-          // Roomテーブルのid情報を取得
+          // MultiImageモデルのrooms_idカラムとRoomモデルのidカラムを
+          // 紐づけている
           $subimage->rooms_id = $room->id;
+
           $subimage->multi_img = $imgName;
           $subimage->save();
         }
@@ -203,5 +207,39 @@ class RoomController extends Controller
     );
 
     return redirect()->route('room.type.list')->with($notification);
+  } //End Method
+
+  public function DeleteRoom(Request $request, $id)
+  {
+    $room = Room::find($id);
+
+    // ★Imageの削除★
+    if (file_exists('storage/upload/roomimg/' . $room->image) and !empty($room->image)) {
+      @unlink('storage/upload/roomimg/' . $room->image);
+    }
+
+    // ★MultiImageの削除★
+    $subimage = MultiImage::where('rooms_id', $room->id)->get()->toArray();
+    if (!empty($subimage)) {
+      foreach ($subimage as $value) {
+        if (!empty($value)) {
+          @unlink('storage/upload/roomimg/multi_img/' . $value['multi_img']);
+        }
+      }
+    }
+
+    // RoomTypeモデルのidカラムを$roomで条件指定し、削除
+    RoomType::where('id', $room->roomtype_id)->delete();
+    MultiImage::where('rooms_id', $room->id)->delete();
+    Facility::where('rooms_id', $room->id)->delete();
+    RoomNumber::where('rooms_id', $room->id)->delete();
+    $room->delete();
+
+    $notification = array(
+      'message' => 'Room Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
   } //End Method
 }
