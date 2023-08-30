@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-<!-- BookAreaモデルのidが1のデータを取得 -->
-=======
-<!-- findでidカラムが1のデータを取得 -->
->>>>>>> c25ff658f400a3fa9980d1ab527d2b65bfdce9fc
+<!-- findでBookAreaのidが1のデータを取得 -->
 @php
 $bookarea = App\Models\BookArea::find(1);
 @endphp
