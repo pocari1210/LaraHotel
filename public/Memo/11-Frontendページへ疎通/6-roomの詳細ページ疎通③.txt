@@ -1,0 +1,37 @@
+
+6-roomの詳細ページ疎通③
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\FrontendRoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function RoomDetailsPage($id)
+  {
+    $roomdetails = Room::find($id);
+    $multiImage = MultiImage::where('rooms_id', $id)->get();
+    $facility = Facility::where('rooms_id', $id)->get();
+    $otherRooms = Room::where('id', '!=', $id)
+      ->orderBy('id', 'DESC')->limit(2)->get();
+
+    return view(
+      'frontend.room.room_details',
+      compact('roomdetails', 'multiImage', 'facility', 'otherRooms')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\room\room_details.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Other Roomsの項目で、FrontendRoomControllerのotherRoomsが
+疎通されていたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
