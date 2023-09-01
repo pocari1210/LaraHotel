@@ -1,0 +1,74 @@
+
+5-roomの詳細ページ疎通②
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\FrontendRoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Models\MultiImage;
+use App\Models\Facility;
+
+  public function RoomDetailsPage($id)
+  {
+    $roomdetails = Room::find($id);
+    $multiImage = MultiImage::where('rooms_id', $id)->get();
+    $facility = Facility::where('rooms_id', $id)->get();
+
+    return view(
+      'frontend.room.room_details',
+      compact('roomdetails', 'multiImage', 'facility')
+    );
+  } // End Method 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\room\room_details.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+      <div class="col-lg-8">
+        <div class="room-details-article">
+          <div class="room-details-slider owl-carousel owl-theme">
+            @foreach ($multiImage as $image)
+            <div class="room-details-item">
+              <img src="{{ asset('storage/upload/roomimg/multi_img/'.$image->multi_img) }}" alt="Images">
+            </div>
+            @endforeach
+          </div>
+
+          <div class="room-details-title">
+            <h2>{{ $roomdetails->type->name }}</h2>
+            <ul>
+              <li>
+                <b> Basic : ${{ $roomdetails->price }}/Night/Room</b>
+              </li>
+            </ul>
+          </div>
+
+          <div class="room-details-content">
+            <p>
+              {!! $roomdetails->description !!}
+            </p>
+
+            <div class="side-bar-plan">
+              <h3>Basic Plan Facilities</h3>
+              <ul>
+                @foreach ($facility as $fac)
+                <li><a href="#">{{ $fac->facility_name }}</a></li>
+                @endforeach
+              </ul>
+            </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+FacilityやMultiImageなど、登録されている情報が
+疎通されていたらOK
