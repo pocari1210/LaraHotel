@@ -1,0 +1,84 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Room All Route 
+Route::controller(FrontendRoomController::class)->group(function () {
+
+  Route::get('/search/room/details/{id}', 'SearchRoomDetails')
+    ->name('search_room_details');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\room\search_room.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <h6>
+    <a href="{{ route('search_room_details',$item->id.'&check_in='.old(check_in).'&check_out='.old('check_out').'&persion='.old('persion'))}}">
+      {{ $item['type']['name'] }}
+    </a>
+  </h6>
+
+★コード解説★
+
+URLが下記のように表示される
+search/room/details/1?check_in=2023-09-02&check_out=2023-09-03&persion=04
+
+参考記事
+https://qiita.com/aosho235/items/0581fc82f8ce2c5ac055
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\FrontendRoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function SearchRoomDetails(Request $request, $id)
+  {
+    $request->flash();
+    $roomdetails = Room::find($id);
+    $multiImage = MultiImage::where('rooms_id', $id)->get();
+    $facility = Facility::where('rooms_id', $id)->get();
+    $otherRooms = Room::where('id', '!=', $id)
+      ->orderBy('id', 'DESC')->limit(2)->get();
+    $room_id = $id;
+
+    return view(
+      'frontend.room.search_room_details',
+      compact(
+        'roomdetails',
+        'multiImage',
+        'facility',
+        'otherRooms',
+        'room_id'
+      )
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\room\search_room.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+詳細ページが疎通できてiたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
