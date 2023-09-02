@@ -1,5 +1,6 @@
 @extends('frontend.main_master')
 @section('main')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
 <!-- Inner Banner -->
 <div class="inner-banner inner-bg10">
@@ -32,7 +33,7 @@
                   <div class="form-group">
                     <label>Check in</label>
                     <div class="input-group">
-                      <input autocomplete="off" type="text" required name="check_id" id="check_id" class="form-control dt_picker" value="{{ old('check_in') ? date('Y-m-d', strtotime(old('check_in'))) : '' }}">
+                      <input autocomplete="off" type="text" required name="check_in" id="check_in" class="form-control dt_picker" value="{{ old('check_in') ? date('Y-m-d', strtotime(old('check_in'))) : '' }}">
                       <span class="input-group-addon"></span>
                     </div>
                     <i class='bx bxs-calendar'></i>
@@ -60,16 +61,27 @@
                   </div>
                 </div>
 
+                <!-----------------------------------
+                hiddenでブラウザにデータを表示させず、
+                料金や割引価格のデータを取得している
+                ------------------------------------>
+                <input type="hidden" id="total_adult" value="{{ $roomdetails->total_adult }}">
+                <input type="hidden" id="room_price" value="{{ $roomdetails->price }}">
+                <input type="hidden" id="discount_p" value="{{ $roomdetails->discount }}">
+
                 <div class="col-lg-12">
                   <div class="form-group">
                     <label>Numbers of Rooms</label>
-                    <select class="form-control" name="number_of_rooms" id="select_room">
+                    <select class="form-control number_of_rooms" name="number_of_rooms" id="select_room">
                       @for ($i = 1; $i <= 5; $i++) <option value="0{{ $i }}">
                         0{{ $i }}
                         </option>
                         @endfor
                     </select>
                   </div>
+
+                  <input type="hidden" name="available_room" id="available_room">
+                  <p class="available_room"></p>
                 </div>
 
                 <div class="col-lg-12">
@@ -80,21 +92,21 @@
                         <td>
                           <p> SubTotal</p>
                         </td>
-                        <td style="text-align: right">34</td>
+                        <td style="text-align: right"><span class="t_subtotal">0</span> </td>
                       </tr>
 
                       <tr>
                         <td>
                           <p> Discount</p>
                         </td>
-                        <td style="text-align: right">34</td>
+                        <td style="text-align: right"><span class="t_discount">0</span></td>
                       </tr>
 
                       <tr>
                         <td>
                           <p> Total</p>
                         </td>
-                        <td style="text-align: right">34</td>
+                        <td style="text-align: right"><span class="t_g_total">0</span></td>
                       </tr>
 
                     </tbody>
@@ -276,5 +288,72 @@
   </div>
 </div>
 <!-- Room Details Other End -->
+
+<script>
+  $(document).ready(function() {
+    var check_in = "{{ old('check_in') }}";
+    var check_out = "{{ old('check_out') }}";
+    var room_id = "{{ $room_id }}";
+    if (check_in != '' && check_out != '') {
+      getAvaility(check_in, check_out, room_id);
+    }
+    $("#check_out").on('change', function() {
+      var check_out = $(this).val();
+      var check_in = $("#check_in").val();
+      if (check_in != '' && check_out != '') {
+        getAvaility(check_in, check_out, room_id);
+      }
+    });
+    $(".number_of_rooms").on('change', function() {
+      var check_out = $("#check_out").val();
+      var check_in = $("#check_in").val();
+      if (check_in != '' && check_out != '') {
+        getAvaility(check_in, check_out, room_id);
+      }
+    });
+  });
+
+  function getAvaility(check_in, check_out, room_id) {
+    $.ajax({
+      url: "{{ route('check_room_availability') }}",
+      data: {
+        room_id: room_id,
+        check_in: check_in,
+        check_out: check_out
+      },
+      success: function(data) {
+        $(".available_room").html('Availability : <span class="text-success">' + data['available_room'] + ' Rooms</span>');
+        $("#available_room").val(data['available_room']);
+        price_calculate(data['total_nights']);
+      }
+    });
+  }
+
+  function price_calculate(total_nights) {
+    var room_price = $("#room_price").val();
+    var discount_p = $("#discount_p").val();
+    var select_room = $("#select_room").val();
+    var sub_total = room_price * total_nights * parseInt(select_room);
+    var discount_price = (parseInt(discount_p) / 100) * sub_total;
+    $(".t_subtotal").text(sub_total);
+    $(".t_discount").text(discount_price);
+    $(".t_g_total").text(sub_total - discount_price);
+  }
+
+  $("#bk_form").on('submit', function() {
+    var av_room = $("#available_room").val();
+    var select_room = $("#select_room").val();
+    if (parseInt(select_room) > av_room) {
+      alert('Sorry, you select maximum number of room');
+      return false;
+    }
+    var nmbr_person = $("#nmbr_person").val();
+    var total_adult = $("#total_adult").val();
+    if (parseInt(nmbr_person) > parseInt(total_adult)) {
+      alert('Sorry, you select maximum number of person');
+      return false;
+    }
+  })
+</script>
 
 @endsection
