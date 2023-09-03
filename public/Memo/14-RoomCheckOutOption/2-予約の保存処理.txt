@@ -1,0 +1,123 @@
+
+2-予約の保存処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::post('/booking/store/', 'BookingStore')
+      ->name('user_booking_store');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\room\search_room_details.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div class="side-bar-form">
+    <h3>Booking Sheet </h3>
+    <form action="{{ route('user_booking_store',$roomdetails->id) }}" method="post" id="bk_form">
+      @csrf
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function BookingStore(Request $request)
+  {
+
+    /**********************************
+     * ★バリデーション★
+     * 
+     * requiredで入力項目を必須にしている
+     ***************************************/
+
+    $validateData = $request->validate([
+      'check_in' => 'required',
+      'check_out' => 'required',
+      'persion' => 'required',
+      'number_of_rooms' => 'required',
+
+    ]);
+
+    /************************************************************
+     * ★available_roomよりnumber_of_roomsが大きいときの処理★
+     * 
+     * toastrでエラーを表示させ、
+     * book_dateのSessionを削除している
+     * 
+     * Session::forgetでセッションを削除
+     **********************************************************/
+
+    if ($request->available_room < $request->number_of_rooms) {
+
+      $notification = array(
+        'message' => 'Something want to wrong!',
+        'alert-type' => 'error'
+      );
+      return redirect()->back()->with($notification);
+    }
+
+    Session::forget('book_date');
+
+    /************************************************************
+     * ★array()で関数でインデックス配列を作成★
+     * 
+     * array()で初期化した配列を$dataとし、
+     * \frontend\room\search_room_details.blade.phpのformから
+     * 送られてきた情報をインデックス配列に保存している
+     **********************************************************/
+
+    $data = array();
+    $data['number_of_rooms'] = $request->number_of_rooms;
+    $data['available_room'] = $request->available_room;
+    $data['persion'] = $request->persion;
+    $data['check_in'] = date('Y-m-d', strtotime($request->check_in));
+    $data['check_out'] = date('Y-m-d', strtotime($request->check_out));
+    $data['room_id'] = $request->room_id;
+
+    // セッションに'book_date'(key) : $data(value)を保存
+
+    Session::put('book_date', $data);
+
+    return redirect()->route('checkout');
+  } // End Method 
+
+★参考サイト★
+(5) array()関数でインデックス配列を作成
+https://wepicks.net/phpref-array/#3-5
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\checkout\checkout.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <!---------------------------------------------------
+  \Frontend\BookingControllerの
+  Session::put('book_date', $data)のキー情報を
+  json_encodeメソッドで
+  JSON形式の文字列に変換し、結果を表示している
+  ----------------------------------------------------->
+
+  <p>Session Value : {{ json_encode(session('book_date')) }}</p>

@@ -107,6 +107,15 @@
                 </div>
               </div>
 
+              <!---------------------------------------------------
+              \Frontend\BookingControllerの
+              Session::put('book_date', $data)のキー情報を
+              json_encodeメソッドで
+              JSON形式の文字列に変換し、結果を表示している
+              ----------------------------------------------------->
+
+              <p>Session Value : {{ json_encode(session('book_date')) }}</p>
+
               <div class="col-lg-12 col-md-12">
                 <div class="form-check">
                   <input type="checkbox" class="form-check-input" id="create-an-account">
