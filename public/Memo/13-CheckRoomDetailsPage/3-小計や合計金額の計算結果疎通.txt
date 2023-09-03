@@ -1,0 +1,133 @@
+
+3-小計や合計金額の計算結果疎通
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\room\search_room_details.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+<script>
+  $(document).ready(function() {
+    var check_in = "{{ old('check_in') }}";
+    var check_out = "{{ old('check_out') }}";
+    var room_id = "{{ $room_id }}";
+    if (check_in != '' && check_out != '') {
+      getAvaility(check_in, check_out, room_id);
+    }
+    $("#check_out").on('change', function() {
+      var check_out = $(this).val();
+      var check_in = $("#check_in").val();
+      if (check_in != '' && check_out != '') {
+        getAvaility(check_in, check_out, room_id);
+      }
+    });
+    $(".number_of_rooms").on('change', function() {
+      var check_out = $("#check_out").val();
+      var check_in = $("#check_in").val();
+      if (check_in != '' && check_out != '') {
+        getAvaility(check_in, check_out, room_id);
+      }
+    });
+  });
+
+  function getAvaility(check_in, check_out, room_id) {
+    $.ajax({
+      url: "{{ route('check_room_availability') }}",
+      data: {
+        room_id: room_id,
+        check_in: check_in,
+        check_out: check_out
+      },
+      success: function(data) {
+        $(".available_room").html('Availability : <span class="text-success">' + data['available_room'] + ' Rooms</span>');
+        $("#available_room").val(data['available_room']);
+        price_calculate(data['total_nights']);
+      }
+    });
+  }
+
+  function price_calculate(total_nights) {
+    var room_price = $("#room_price").val();
+    var discount_p = $("#discount_p").val();
+    var select_room = $("#select_room").val();
+    var sub_total = room_price * total_nights * parseInt(select_room);
+    var discount_price = (parseInt(discount_p) / 100) * sub_total;
+    $(".t_subtotal").text(sub_total);
+    $(".t_discount").text(discount_price);
+    $(".t_g_total").text(sub_total - discount_price);
+  }
+  $("#bk_form").on('submit', function() {
+    var av_room = $("#available_room").val();
+    var select_room = $("#select_room").val();
+    if (parseInt(select_room) > av_room) {
+      alert('Sorry, you select maximum number of room');
+      return false;
+    }
+    var nmbr_person = $("#nmbr_person").val();
+    var total_adult = $("#total_adult").val();
+    if (parseInt(nmbr_person) > parseInt(total_adult)) {
+      alert('Sorry, you select maximum number of person');
+      return false;
+    }
+  })
+</script>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Room All Route 
+Route::controller(FrontendRoomController::class)->group(function () {
+
+  Route::get('/check_room_availability/', 'CheckRoomAvailability')
+    ->name('check_room_availability');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\FrontendRoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function CheckRoomAvailability(Request $request)
+  {
+
+    $sdate = date('Y-m-d', strtotime($request->check_in));
+    $edate = date('Y-m-d', strtotime($request->check_out));
+    $alldate = Carbon::create($edate)->subDay();
+    $d_period = CarbonPeriod::create($sdate, $alldate);
+    $dt_array = [];
+    foreach ($d_period as $period) {
+      array_push($dt_array, date('Y-m-d', strtotime($period)));
+    }
+
+    $check_date_booking_ids = RoomBookedDate::whereIn('book_date', $dt_array)
+      ->distinct()
+      ->pluck('booking_id')
+      ->toArray();
+
+    $room = Room::withCount('room_numbers')->find($request->room_id);
+
+    $bookings = Booking::withCount('assign_rooms')->whereIn('id', $check_date_booking_ids)->where('rooms_id', $room->id)->get()->toArray();
+
+    $total_book_room = array_sum(array_column($bookings, 'assign_rooms_count'));
+
+    $av_room = @$room->room_numbers_count - $total_book_room;
+
+    $toDate = Carbon::parse($request->check_in);
+    $fromDate = Carbon::parse($request->check_out);
+    $nights = $toDate->diffInDays($fromDate);
+
+    return response()->json(['available_room' => $av_room, 'total_nights' => $nights]);
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

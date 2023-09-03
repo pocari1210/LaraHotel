@@ -1,0 +1,58 @@
+
+1-checkoutページ疎通
+
+下記コマンドでコントローラー新規作成
+php artisan make:controller Frontend/BookingController
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Http\Controllers\Frontend\BookingController;
+
+// Auth Middleware User must have login for access this route 
+Route::middleware(['auth'])->group(function () {
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::get('/checkout/', 'Checkout')
+      ->name('checkout');
+  });
+}); // End Group Auth Middleware
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class BookingController extends Controller
+{
+  public function Checkout()
+  {
+    return view('frontend.checkout.checkout');
+  } // End Method 
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集◆
+
+ディレクトリ
+\resources\views\frontend\checkout\checkout.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/checkout/'で検索し、checkoutページが疎通できたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

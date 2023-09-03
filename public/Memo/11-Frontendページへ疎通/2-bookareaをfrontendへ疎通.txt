@@ -1,4 +1,14 @@
-<!-- findでBookAreaのidが1のデータを取得 -->
+
+2-bookareaをfrontendへ疎通
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\home\room_area_two.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+<!-- findでidカラムが1のデータを取得 -->
 @php
 $bookarea = App\Models\BookArea::find(1);
 @endphp
@@ -27,3 +37,6 @@ $bookarea = App\Models\BookArea::find(1);
     </div>
   </div>
 </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+

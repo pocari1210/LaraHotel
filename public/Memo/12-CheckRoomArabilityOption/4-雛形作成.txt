@@ -1,0 +1,73 @@
+
+
+
+
+◆テーブルの編集◆
+
+ディレクトリ
+\database\migrations\2023_08_27_120007_create_rooms_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+$table->integer('status')->default(1);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆モデルの編集(リレーション)◆
+
+ディレクトリ
+\app\Models\Room.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function room_numbers()
+  {
+    // ★hasMany★
+    // RoomNumberモデルと1:多のリレーションをしている
+    return $this->hasMany(RoomNumber::class, 'rooms_id')
+      ->where('status', 'Active');
+  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function UpdateRoom(Request $request, $id)
+  {
+
+    ↓↓追記↓↓
+    $room->status = 1;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\FrontendRoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function BookingSeach(Request $request)
+  {
+
+    ↓↓追記↓↓
+    $dt_array = [];
+    foreach ($d_period as $period) {
+      array_push($dt_array, date('Y-m-d', strtotime($period)));
+    }
+
+    $check_date_booking_ids = RoomBookedDate::whereIn('book_date', $dt_array)->distinct()->pluck('booking_id')->toArray();
+
+    $rooms = Room::withCount('room_numbers')->where('status', 1)->get();
+
+    return view(
+      'frontend.room.search_room',
+      compact('rooms', 'check_date_booking_ids')
+    );
+  } // End Method 

@@ -1,0 +1,91 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Room All Route 
+  Route::controller(RoomController::class)->group(function () {
+
+    Route::get('/delete/room/{id}', 'DeleteRoom')
+      ->name('delete.room');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\allroom\roomtype\view_roomtype.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <tr>
+    <td>{{ $key+1 }}</td>
+    <td> <img src="{{ (!empty($item->room->image)) ? url('storage/upload/roomimg/'.$item->room->image) : url('storage/upload/no_image.jpg') }}" alt="" style="width: 50px; height:30px;"> </td>
+    <td>{{ $item->name }}</td>
+    <td>
+      @foreach ($rooms as $room)
+      <a href="{{ route('edit.room',$room->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+
+      ↓↓routeの追記↓↓
+      <a href="{{ route('delete.room',$room->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+      @endforeach
+    </td>
+  </tr>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function DeleteRoom(Request $request, $id)
+  {
+    $room = Room::find($id);
+
+    // ★Imageの削除★
+    if (file_exists('storage/upload/roomimg/' . $room->image) and !empty($room->image)) {
+      @unlink('storage/upload/roomimg/' . $room->image);
+    }
+
+    // ★MultiImageの削除★
+    $subimage = MultiImage::where('rooms_id', $room->id)->get()->toArray();
+    if (!empty($subimage)) {
+      foreach ($subimage as $value) {
+        if (!empty($value)) {
+          @unlink('storage/upload/roomimg/multi_img/' . $value['multi_img']);
+        }
+      }
+    }
+
+    // RoomTypeモデルのidカラムを$roomで条件指定し、削除
+    RoomType::where('id', $room->roomtype_id)->delete();
+
+
+    // $subimage->rooms_id = $room->id;の記述より、
+    // RoomモデルのidカラムとMultiImageモデルのrooms_idカラムが紐づいている
+    MultiImage::where('rooms_id', $room->id)->delete();
+
+    Facility::where('rooms_id', $room->id)->delete();
+    RoomNumber::where('rooms_id', $room->id)->delete();
+    $room->delete();
+
+    $notification = array(
+      'message' => 'Room Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } //End Method
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,70 @@
+
+2-Modelのリレーション
+
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\RoomType.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class RoomType extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+
+  public function room()
+  {
+    return $this->belongsTo(Room::class, 'id', 'roomtype_id');
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomTypeController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function RoomTypeStore(Request $request)
+  {
+    $roomtype_id =  RoomType::insertGetId([
+      'name' => $request->name,
+      'created_at' => Carbon::now(),
+    ]);
+
+    Room::insert([
+      'roomtype_id' => $roomtype_id,
+    ]);
+
+★コード解説★
+RoomType::insertGetIdで、カラムにデータを登録ができ、
+Roomテーブルのroomtype_idカラムにデータにも登録が
+できていたらOK
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集◆
+
+ディレクトリ
+\resources\views\backend\allroom\roomtype\view_roomtype.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @php
+  $rooms = App\Models\Room::where('roomtype_id',$item->id)->get();
+  @endphp
+
+  <tr>
+    <td>{{ $key+1 }}</td>
+    <td> <img src="{{ (!empty($item->room->image)) ? 
+      url('storage/upload/roomimg/'.$item->room->image) : url('storage/upload/no_image.jpg') }}" 
+      alt="" style="width: 50px; height:30px;">
+    </td>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

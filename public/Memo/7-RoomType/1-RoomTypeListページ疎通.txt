@@ -1,0 +1,122 @@
+
+1-RoomTypeListページ疎通
+
+下記コマンドでコントローラーファイル新規作成
+php artisan make:controller Backend/RoomTypeController
+
+下記コマンドでmodelとtableを新規作成
+php artisan make:model RoomType -m
+
+◆modelの編集◆
+
+ディレクトリ
+\app\Models\RoomType.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class RoomType extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_08_27_082540_create_room_types_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('room_types', function (Blueprint $table) {
+      $table->id();
+      $table->string('name')->nullable();
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// RoomType All Route 
+  Route::controller(RoomTypeController::class)->group(function () {
+
+    Route::get('/room/type/list', 'RoomTypeList')
+      ->name('room.type.list');
+  });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-category"></i>
+        </div>
+        <div class="menu-title">Manage Room Type </div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('room.type.list') }}"><i class='bx bx-radio-circle'></i>Room Type List </a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomTypeController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use Intervention;
+use Carbon\Carbon;
+use App\Models\RoomType;
+use App\Models\BookArea;
+
+  public function RoomTypeList()
+  {
+    $allData = RoomType::orderBy('id', 'desc')->get();
+
+    return view(
+      'backend.allroom.roomtype.view_roomtype',
+      compact('allData')
+    );
+  } // End Method 
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\allroom\roomtype\view_roomtype.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Room Type Listページが疎通できていればOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+

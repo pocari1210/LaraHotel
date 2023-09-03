@@ -1,0 +1,66 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Room All Route 
+Route::controller(FrontendRoomController::class)->group(function () {
+
+  Route::get('/bookings/', 'BookingSeach')
+    ->name('booking.search');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\index.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+<form method="get" action="{{ route('booking.search') }}">
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\FrontendRoomController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function BookingSeach(Request $request)
+  {
+
+    // フラッシュデータとしてセッションに保存
+    $request->flash();
+
+    if ($request->check_in == $request->check_out) {
+
+      $notification = array(
+        'message' => 'Something want to worng',
+        'alert-type' => 'error'
+      );
+
+      return redirect()->back()->with($notification);
+    }
+
+    $sdate = date('Y-m-d', strtotime($request->check_in));
+    $edate = date('Y-m-d', strtotime($request->check_out));
+    $alldate = Carbon::create($edate)->subDay();
+    $d_period = CarbonPeriod::create($sdate, $alldate);
+  } // End Method 
+
+★コード解説★
+
+フラッシュデータに関する記事
+https://qiita.com/mtn_kt/items/2e67b6a9beedcde9e4f9
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

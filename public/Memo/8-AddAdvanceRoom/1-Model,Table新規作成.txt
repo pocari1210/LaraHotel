@@ -1,0 +1,127 @@
+
+
+
+下記コマンドでmodelとtableを新規作成
+php artisan make:model Facility -m
+php artisan make:model MultiImage -m
+php artisan make:model Room -m
+
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\Room.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Room extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_08_27_120007_create_rooms_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('rooms', function (Blueprint $table) {
+      $table->id();
+      $table->integer('roomtype_id');
+      $table->string('total_adult')->nullable();
+      $table->string('total_child')->nullable();
+      $table->string('room_capacity')->nullable();
+      $table->string('image')->nullable();
+      $table->string('price')->nullable();
+      $table->string('size')->nullable();
+      $table->string('view')->nullable();
+      $table->string('bed_style')->nullable();
+      $table->integer('discount')->default(0);
+      $table->text('short_desc')->nullable();
+      $table->text('description')->nullable();
+      $table->integer('status')->default(0);
+      $table->timestamps();
+    });
+  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Modelの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class MultiImage extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_08_27_120001_create_multi_images_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('multi_images', function (Blueprint $table) {
+      $table->id();
+      $table->integer('rooms_id');
+      $table->string('multi_img')->nullable();
+      $table->timestamps();
+    });
+  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\Facility.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Facility extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_08_27_115951_create_facilities_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('facilities', function (Blueprint $table) {
+      $table->id();
+      $table->integer('rooms_id');
+      $table->string('facility_name')->nullable();
+      $table->timestamps();
+    });
+  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
