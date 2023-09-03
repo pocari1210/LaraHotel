@@ -114,7 +114,7 @@
               JSON形式の文字列に変換し、結果を表示している
               ----------------------------------------------------->
 
-              <p>Session Value : {{ json_encode(session('book_date')) }}</p>
+              <!-- <p>Session Value : {{ json_encode(session('book_date')) }}</p> -->
 
               <div class="col-lg-12 col-md-12">
                 <div class="form-check">
@@ -135,23 +135,28 @@
                 <hr>
 
                 <div style="display: flex">
-                  <img style="height:100px; width:120px;object-fit: cover" src=" " alt="Images" alt="Images">
+                  <img style="height:100px; width:120px;object-fit: cover" src="{{ (!empty($room->image))? url('storage/upload/roomimg/'.$room->image):url('upload/no_image.jpg') }}" alt="Images" alt="Images">
                   <div style="padding-left: 10px;">
-                    <a href=" " style="font-size: 20px; color: #595959;font-weight: bold">Room Name</a>
-                    <p><b>120 / Night</b></p>
+                    <a href=" " style="font-size: 20px; color: #595959;font-weight: bold">{{ @$room->type->name }}</a>
+                    <p><b>{{ $room->price }} / Night</b></p>
                   </div>
+
                 </div>
 
                 <br>
 
                 <table class="table" style="width: 100%">
+                  @php
+                  $subtotal = $room->price * $nights * $book_data['number_of_rooms'];
+                  $discount =($room->discount/100)*$subtotal;
+                  @endphp
 
                   <tr>
                     <td>
-                      <p>Total Night ( 4)</p>
+                      <p>Total Night <br> <b> ( {{ $book_data['check_in'] }} - {{ $book_data['check_out'] }})</b></p>
                     </td>
                     <td style="text-align: right">
-                      <p>Room Name</p>
+                      <p> {{ $nights }} Days</p>
                     </td>
                   </tr>
                   <tr>
@@ -159,7 +164,7 @@
                       <p>Total Room</p>
                     </td>
                     <td style="text-align: right">
-                      <p>3</p>
+                      <p>{{ $book_data['number_of_rooms'] }}</p>
                     </td>
                   </tr>
                   <tr>
@@ -167,7 +172,7 @@
                       <p>Subtotal</p>
                     </td>
                     <td style="text-align: right">
-                      <p>200</p>
+                      <p>${{ $subtotal }}</p>
                     </td>
                   </tr>
                   <tr>
@@ -175,7 +180,7 @@
                       <p>Discount</p>
                     </td>
                     <td style="text-align:right">
-                      <p>Discount</p>
+                      <p>${{ $discount }}</p>
                     </td>
                   </tr>
                   <tr>
@@ -183,8 +188,8 @@
                       <p>Total</p>
                     </td>
                     <td style="text-align:right">
-                      <p>Total</p>
-                    </td>
+                      <p>${{ $subtotal-$discount }}</p>
+                      /td>
                   </tr>
                 </table>
 
