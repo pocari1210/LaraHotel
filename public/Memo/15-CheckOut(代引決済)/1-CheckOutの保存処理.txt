@@ -1,0 +1,73 @@
+
+1-CheckOutの保存処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::post('/checkout/store/', 'CheckoutStore')
+      ->name('checkout.store');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\checkout\checkout.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <form method="post" role="form" action="{{ route('checkout.store') }}">
+    @csrf
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function CheckoutStore(Request $request)
+  {
+
+    /**********************************
+     * ★バリデーション★
+     * 
+     * requiredで入力項目を必須にしている
+     ***************************************/
+
+    $this->validate($request, [
+      'name' => 'required',
+      'email' => 'required',
+      'country' => 'required',
+      'phone' => 'required',
+      'address' => 'required',
+      'state' => 'required',
+      'zip_code' => 'required',
+      'payment_method' => 'required',
+    ]);
+
+    $book_data = Session::get('book_date');
+    $toDate = Carbon::parse($book_data['check_in']);
+    $fromDate = Carbon::parse($book_data['check_out']);
+    $total_nights = $toDate->diffInDays($fromDate);
+
+    $room = Room::find($book_data['room_id']);
+    $subtotal = $room->price * $total_nights * $book_data['number_of_rooms'];
+    $discount = ($room->discount / 100) * $subtotal;
+    $total_price = $subtotal - $discount;
+    $code = rand(000000000, 999999999);
+  } // End Method   
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
