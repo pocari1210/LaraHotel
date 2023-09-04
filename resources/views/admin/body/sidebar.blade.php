@@ -13,13 +13,12 @@
   <ul class="metismenu" id="menu">
 
     <li>
-      <a href="widgets.html">
+      <a href="{{ route('admin.dashboard') }}">
         <div class="parent-icon"><i class='bx bx-home-alt'></i>
         </div>
         <div class="menu-title">Dashboard</div>
       </a>
     </li>
-
 
     <li>
       <a href="javascript:;" class="has-arrow">

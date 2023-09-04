@@ -170,6 +170,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/booking/list', 'BookingList')
       ->name('booking.list');
+
+    Route::get('/edit_booking/{id}', 'EditBooking')
+      ->name('edit_booking');
   });
 }); // End Admin Group Middleware 
 
