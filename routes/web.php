@@ -211,5 +211,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::match(['get', 'post'], '/stripe_pay', [BookingController::class, 'stripe_pay'])
       ->name('stripe_pay');
+
+    // booking Update 
+    Route::post('/update/booking/status/{id}', 'UpdateBookingStatus')
+      ->name('update.booking.status');
   });
 }); // End Group Auth Middleware
