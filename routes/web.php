@@ -164,6 +164,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::get('/delete/room/{id}', 'DeleteRoom')
       ->name('delete.room');
   });
+
+  /// Admin Booking All Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::get('/booking/list', 'BookingList')
+      ->name('booking.list');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 

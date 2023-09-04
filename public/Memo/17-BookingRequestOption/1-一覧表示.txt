@@ -1,0 +1,77 @@
+
+1-一覧表示
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Admin Booking All Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::get('/booking/list', 'BookingList')
+      ->name('booking.list');
+  });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li class="menu-label">Booking Manage </li>
+
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class='bx bx-cart'></i>
+        </div>
+        <div class="menu-title">Booking </div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('booking.list') }}"><i class='bx bx-radio-circle'></i>Booking List </a>
+        </li>
+        <li> <a href="ecommerce-products-details.html"><i class='bx bx-radio-circle'></i>Product Details</a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function BookingList()
+  {
+    $allData = Booking::orderBy('id', 'desc')->get();
+
+    return view(
+      'backend.booking.booking_list',
+      compact('allData')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\booking\booking_list.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Bookingの一覧ページが疎通されていればOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
