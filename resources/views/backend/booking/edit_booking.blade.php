@@ -14,7 +14,6 @@
               <p class="mb-0 text-secondary">Booking No:</p>
               <h6 class="my-1 text-info">{{ $editData->code }}</h6>
             </div>
-
             <div class="widgets-icons-2 rounded-circle bg-gradient-blues text-white ms-auto">
               <i class='bx bxs-cart'></i>
             </div>
@@ -130,6 +129,7 @@
                   <td>${{ $editData->actual_price *  $editData->number_of_rooms }}</td>
 
                 </tr>
+
               </tbody>
             </table>
             <div class="col-md-6" style="float: right">
@@ -143,17 +143,21 @@
                   <td>Subtotal</td>
                   <td>${{ $editData->subtotal }}</td>
                 </tr>
-
                 <tr>
                   <td>Discount</td>
                   <td>${{ $editData->discount }}</td>
                 </tr>
-
                 <tr>
                   <td>Grand Total</td>
                   <td>${{ $editData->total_price }}</td>
                 </tr>
               </table>
+            </div>
+
+            <div style="clear: both"></div>
+
+            <div style="margin-top: 40px; margin-bottom:20px;">
+              <a href="javascript::void(0)" class="btn btn-primary assign_room"> Assign Room</a>
             </div>
           </div>
           {{-- // end table responsive --}}
@@ -176,7 +180,7 @@
                 <select name="status" id="input7" class="form-select">
                   <option selected="">Select Status..</option>
                   <option value="0" {{ $editData->status == 0 ? 'selected':''}}> Pending </option>
-                  <option value="1" {{ $editData->status == 1 ?'selected':''}}> Complete </option>
+                  <option value="1" {{ $editData->status == 1 ?'selected':''}}>Complete </option>
                 </select>
               </div>
 
@@ -198,7 +202,6 @@
             </div>
           </div>
         </div>
-
         <div class="card-body">
           <form action="{{ route('update.booking', $editData->id) }}" method="POST">
             @csrf
@@ -227,25 +230,91 @@
               <div class="mt-2">
                 <button type="submit" class="btn btn-primary">Update </button>
               </div>
+
             </div>
           </form>
         </div>
+      </div>
+
+      <div class="card radius-10 w-100">
+        <div class="card-header">
+          <div class="d-flex align-items-center">
+            <div>
+              <h6 class="mb-0">Customer Infromation </h6>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center border-top">Name <span class="badge bg-success rounded-pill">{{ $editData['user']['name'] }}</span>
+            </li>
+
+            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">Email <span class="badge bg-danger rounded-pill">{{ $editData['user']['email'] }} </span>
+            </li>
+
+            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">Phone <span class="badge bg-primary rounded-pill">{{ $editData['user']['phone'] }}</span>
+            </li>
+
+            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">Country <span class="badge bg-warning text-dark rounded-pill">{{ $editData->country }}</span>
+            </li>
+
+            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center border-top">State <span class="badge bg-success rounded-pill">{{ $editData->state }}</span>
+            </li>
+
+            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">Zip Code <span class="badge bg-danger rounded-pill"> {{ $editData->zip_code }} </span>
+            </li>
+
+            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">Address <span class="badge bg-danger rounded-pill"> {{ $editData->address }} </span>
+            </li>
+          </ul>
+        </div>
 
       </div>
+      <!-- nd card radius-10 w-100 -->
+
     </div>
   </div><!--end row-->
 
 </div>
 
+<!-- Modal -->
+<div class="modal fade myModal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Rooms</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+
 <script>
   $(document).ready(function() {
     getAvaility();
+
+    $(".assign_room").on('click', function() {
+      $.ajax({
+        url: "{{ route('assign_room',$editData->id) }}",
+        success: function(data) {
+          $('.myModal .modal-body').html(data);
+          $('.myModal').modal('show');
+        }
+      });
+      return false;
+    });
   });
 
   function getAvaility() {
     var check_in = $('#check_in').val();
     var check_out = $('#check_out').val();
     var room_id = "{{ $editData->rooms_id }}";
+
     $.ajax({
       url: "{{ route('check_room_availability') }}",
       data: {
