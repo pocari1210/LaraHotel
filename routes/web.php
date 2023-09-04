@@ -198,5 +198,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/checkout/store/', 'CheckoutStore')
       ->name('checkout.store');
+
+    Route::match(['get', 'post'], '/stripe_pay', [BookingController::class, 'stripe_pay'])
+      ->name('stripe_pay');
   });
 }); // End Group Auth Middleware

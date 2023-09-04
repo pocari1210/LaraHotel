@@ -1,0 +1,63 @@
+
+2-StripeのDashboardの決済疎通
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::match(['get', 'post'], '/stripe_pay', [BookingController::class, 'stripe_pay'])
+      ->name('stripe_pay');
+
+★コード解説★
+
+Route::match(['get', 'post']とすることで、
+GET通信とPOST通信を両方行えるようにしている
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function CheckoutStore(Request $request)
+  {
+
+    if ($request->payment_method == 'Stripe') {
+      Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+      $s_pay = Stripe\Charge::create([
+        "amount" => $total_price * 100,
+        "currency" => "jpy",
+        "source" => $request->stripeToken,
+        "description" => "Payment For Booking. Booking No " . $code,
+      ]);
+
+      if ($s_pay['status'] == 'succeeded') {
+        $payment_status = 1;
+        $transation_id = $s_pay->id;
+      } else {
+
+        $notification = array(
+          'message' => 'Sorry Payment Field',
+          'alert-type' => 'error'
+        );
+        return redirect('/')->with($notification);
+      }
+    } else {
+      $payment_status = 0;
+      $transation_id = '';
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+StripeのDashboardに決済結果が支払いの
+タブに飛んできていたらOK
