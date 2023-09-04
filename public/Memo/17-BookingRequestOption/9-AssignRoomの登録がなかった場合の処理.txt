@@ -1,0 +1,31 @@
+
+9-AssignRoomの登録がなかった場合の処理
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    @foreach ($assign_rooms as $assign_room)
+    <tr>
+      <td>{{ $assign_room->room_number->room_no }}</td>
+      <td>
+        <a href="{{ route('assign_room_delete',$assign_room->id) }}" id="delete">
+          Delete
+        </a>
+      </td>
+    </tr>
+    @endforeach
+  </table>
+
+  ↓↓AssignRoomの登録がなかった場合の表示↓↓
+  @else
+  <div class="alert alert-danger text-center">
+    Not Found Assign Room
+  </div>
+  @endif
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
