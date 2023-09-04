@@ -1,0 +1,100 @@
+
+
+
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\BookingRoomList.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class BookingRoomList extends Model
+{
+
+  ↓↓リレーションの追記↓↓
+  public function room_number()
+  {
+    return $this->belongsTo(RoomNumber::class, 'room_number_id');
+  }
+
+  public function booking()
+  {
+    return $this->belongsTo(Booking::class, 'booking_id');
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div style="margin-top: 40px; margin-bottom:20px;">
+    <a href="javascript::void(0)" class="btn btn-primary assign_room"> Assign Room</a>
+  </div>
+
+  @php
+  $assign_rooms = App\Models\BookingRoomList::with('room_number')
+  ->where('booking_id',$editData->id)->get();
+  @endphp
+
+  @if (count($assign_rooms) > 0)
+  <table class="table table-bordered">
+    <tr>
+      <th>Room Number</th>
+      <th>Action</th>
+    </tr>
+    @foreach ($assign_rooms as $assign_room)
+    <tr>
+      <td>{{ $assign_room->room_number->room_no }}</td>
+      <td>
+        <a href="">Delete</a>
+      </td>
+    </tr>
+    @endforeach
+  </table>
+  @endif
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AssignRoomStore($booking_id, $room_number_id)
+  {
+
+    if ($check_data < $booking->number_of_rooms) {
+      $assign_data = new BookingRoomList();
+      $assign_data->booking_id = $booking_id;
+      $assign_data->room_id = $booking->rooms_id;
+      $assign_data->room_number_id = $room_number_id;
+      $assign_data->save();
+
+      $notification = array(
+        'message' => 'Room Assign Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->back()->with($notification);
+    } else {
+
+      $notification = array(
+        'message' => 'Room Already Assign',
+        'alert-type' => 'error'
+      );
+      return redirect()->back()->with($notification);
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+\resources\views\backend\booking\assign_room.blade.phpのモーダルから
+保存の処理ボタンを押し、Room Numberのテーブルにデータが
+追加されていたらOK
