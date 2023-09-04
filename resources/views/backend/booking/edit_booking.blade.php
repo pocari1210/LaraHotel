@@ -12,6 +12,7 @@
               <p class="mb-0 text-secondary">Booking No:</p>
               <h6 class="my-1 text-info">{{ $editData->code }}</h6>
             </div>
+
             <div class="widgets-icons-2 rounded-circle bg-gradient-blues text-white ms-auto">
               <i class='bx bxs-cart'></i>
             </div>
@@ -125,55 +126,109 @@
                   </td>
                   <td>{{ $editData->total_night }}</td>
                   <td>${{ $editData->actual_price *  $editData->number_of_rooms }}</td>
+
                 </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-lg-4 d-flex">
-        <div class="card radius-10 w-100">
-          <div class="card-header">
-            <div class="d-flex align-items-center">
-              <div>
-                <h6 class="mb-0">Trending Products</h6>
-              </div>
-              <div class="dropdown ms-auto">
-                <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="javascript:;">Action</a>
-                  </li>
-                  <li><a class="dropdown-item" href="javascript:;">Another action</a>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li><a class="dropdown-item" href="javascript:;">Something else here</a>
-                  </li>
-                </ul>
-              </div>
+            <div class="col-md-6" style="float: right">
+              <style>
+                .test_table td {
+                  text-align: right;
+                }
+              </style>
+              <table class="table test_table" style="float: right" border="none">
+                <tr>
+                  <td>Subtotal</td>
+                  <td>${{ $editData->subtotal }}</td>
+                </tr>
+
+                <tr>
+                  <td>Discount</td>
+                  <td>${{ $editData->discount }}</td>
+                </tr>
+
+                <tr>
+                  <td>Grand Total</td>
+                  <td>${{ $editData->total_price }}</td>
+                </tr>
+              </table>
             </div>
           </div>
-          <div class="card-body">
-            <div class="chart-container-2">
-              <canvas id="chart2"></canvas>
+          {{-- // end table responsive --}}
+
+          <form action="">
+
+            <div class="row" style="margin-top: 40px;">
+              <div class="col-md-5">
+                <label for="">Payment Status</label>
+                <select name="payment_status" id="input7" class="form-select">
+                  <option selected="">Select Status..</option>
+                  <option value="0" {{ $editData->payment_status == 0 ? 'selected':''}}> Pending </option>
+                  <option value="1" {{ $editData->payment_status == 1?'selected':''}}>Complete </option>
+                </select>
+              </div>
+
+              <div class="col-md-5">
+                <label for="">Booking Status</label>
+                <select name="status" id="input7" class="form-select">
+                  <option selected="">Select Status..</option>
+                  <option value="0" {{ $editData->status == 0 ? 'selected':''}}> Pending </option>
+                  <option value="1" {{ $editData->status == 1 ?'selected':''}}> Complete </option>
+                </select>
+              </div>
+
+              <div class="col-md-12" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">Update</button>
+              </div>
             </div>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center border-top">Jeans <span class="badge bg-success rounded-pill">25</span>
-            </li>
-            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">T-Shirts <span class="badge bg-danger rounded-pill">10</span>
-            </li>
-            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">Shoes <span class="badge bg-primary rounded-pill">65</span>
-            </li>
-            <li class="list-group-item d-flex bg-transparent justify-content-between align-items-center">Lingerie <span class="badge bg-warning text-dark rounded-pill">14</span>
-            </li>
-          </ul>
+          </form>
         </div>
       </div>
-    </div><!--end row-->
+    </div>
 
-  </div>
+    <div class="col-12 col-lg-4">
+      <div class="card radius-10 w-100">
+        <div class="card-header">
+          <div class="d-flex align-items-center">
+            <div>
+              <h6 class="mb-0">Manage Room and Date </h6>
+            </div>
+          </div>
+        </div>
 
-  @endsection
+        <div class="card-body">
+          <form action="">
+            <div class="row">
+              <div class="col-md-12 mb-2">
+                <label for="">CheckIn</label>
+                <input type="date" required name="check_in" class="form-control" value="{{ $editData->check_in }}">
+              </div>
+
+              <div class="col-md-12 mb-2">
+                <label for="">CheckOut</label>
+                <input type="date" required name="check_out" class="form-control" value="{{ $editData->check_out }}">
+              </div>
+
+              <div class="col-md-12 mb-2">
+                <label for="">Room</label>
+                <input type="number" required name="number_of_rooms" class="form-control" value="{{ $editData->number_of_rooms }}">
+              </div>
+
+              <div class="col-md-12 mb-2">
+                <label for="">Availability: <span class="text-success availability"></span> </label>
+              </div>
+
+              <div class="mt-2">
+                <button type="submit" class="btn btn-primary">Update </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div><!--end row-->
+
+</div>
+
+@endsection
