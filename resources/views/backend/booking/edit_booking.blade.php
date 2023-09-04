@@ -1,6 +1,8 @@
 @extends('admin.admin_dashboard')
 @section('admin')
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
 <div class="page-content">
   <div class="row row-cols-1 row-cols-md-2 row-cols-xl-5">
 
@@ -198,22 +200,25 @@
         </div>
 
         <div class="card-body">
-          <form action="">
+          <form action="{{ route('update.booking', $editData->id) }}" method="POST">
+            @csrf
             <div class="row">
               <div class="col-md-12 mb-2">
                 <label for="">CheckIn</label>
-                <input type="date" required name="check_in" class="form-control" value="{{ $editData->check_in }}">
+                <input type="date" required name="check_in" id="check_in" class="form-control" value="{{ $editData->check_in }}">
               </div>
 
               <div class="col-md-12 mb-2">
                 <label for="">CheckOut</label>
-                <input type="date" required name="check_out" class="form-control" value="{{ $editData->check_out }}">
+                <input type="date" required name="check_out" id="check_out" class="form-control" value="{{ $editData->check_out }}">
               </div>
 
               <div class="col-md-12 mb-2">
                 <label for="">Room</label>
                 <input type="number" required name="number_of_rooms" class="form-control" value="{{ $editData->number_of_rooms }}">
               </div>
+
+              <input type="hidden" name="available_room" id="available_room" class="form-control">
 
               <div class="col-md-12 mb-2">
                 <label for="">Availability: <span class="text-success availability"></span> </label>
@@ -231,5 +236,29 @@
   </div><!--end row-->
 
 </div>
+
+<script>
+  $(document).ready(function() {
+    getAvaility();
+  });
+
+  function getAvaility() {
+    var check_in = $('#check_in').val();
+    var check_out = $('#check_out').val();
+    var room_id = "{{ $editData->rooms_id }}";
+    $.ajax({
+      url: "{{ route('check_room_availability') }}",
+      data: {
+        room_id: room_id,
+        check_in: check_in,
+        check_out: check_out
+      },
+      success: function(data) {
+        $(".availability").text(data['available_room']);
+        $("#available_room").val(data['available_room']);
+      }
+    });
+  }
+</script>
 
 @endsection
