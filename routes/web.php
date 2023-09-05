@@ -181,6 +181,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/view/room/list', 'ViewRoomList')
       ->name('view.room.list');
+
+    Route::get('/add/room/list', 'AddRoomList')
+      ->name('add.room.list');
   });
 }); // End Admin Group Middleware 
 
