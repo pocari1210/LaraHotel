@@ -184,6 +184,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/add/room/list', 'AddRoomList')
       ->name('add.room.list');
+
+    Route::post('/store/roomlist', 'StoreRoomList')
+      ->name('store.roomlist');
   });
 }); // End Admin Group Middleware 
 
