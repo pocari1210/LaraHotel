@@ -1,0 +1,118 @@
+
+1-一覧ページ
+
+下記コマンドでコントローラー新規作成
+php artisan make:controller Backend/TestimonialController
+
+下記コマンドでModelとTable新規作成
+php artisan make:model Testimonial -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\Testimonial.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Testimonial extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆テーブルの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_07_142619_create_testimonials_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('testimonials', function (Blueprint $table) {
+      $table->id();
+      $table->string('name')->nullable();
+      $table->string('city')->nullable();
+      $table->string('image')->nullable();
+      $table->text('message');
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Http\Controllers\Backend\TestimonialController;
+
+  /// Tesimonial All Route 
+  Route::controller(TestimonialController::class)->group(function () {
+
+    Route::get('/all/testimonial', 'AllTestimonial')
+      ->name('all.testimonial');
+  });
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <li>
+    <a class="has-arrow" href="javascript:;">
+      <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+      </div>
+      <div class="menu-title">Tesimonial</div>
+    </a>
+    <ul>
+      <li> <a href="{{ route('all.testimonial') }}"><i class='bx bx-radio-circle'></i>All Testimonial</a>
+      </li>
+      <li> <a href="#"><i class='bx bx-radio-circle'></i>Add Testimonial</a>
+      </li>
+    </ul>
+  </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TestimonialController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AllTestimonial()
+  {
+    $testimonial = Testimonial::latest()->get();
+
+    return view(
+      'backend.tesimonial.all_tesimonial',
+      compact('testimonial')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\tesimonial\all_tesimonial.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+All Testimonialページが疎通されていたらOK
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

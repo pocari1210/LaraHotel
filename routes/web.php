@@ -8,6 +8,7 @@ use App\Http\Controllers\Backend\TeamController;
 use App\Http\Controllers\Backend\RoomTypeController;
 use App\Http\Controllers\Backend\RoomController;
 use App\Http\Controllers\Backend\RoomListController;
+use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\BookingController;
 
@@ -190,6 +191,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/store/roomlist', 'StoreRoomList')
       ->name('store.roomlist');
+  });
+
+  /// Tesimonial All Route 
+  Route::controller(TestimonialController::class)->group(function () {
+
+    Route::get('/all/testimonial', 'AllTestimonial')
+      ->name('all.testimonial');
   });
 }); // End Admin Group Middleware 
 
