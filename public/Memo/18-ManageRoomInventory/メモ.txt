@@ -1,0 +1,142 @@
+
+下記コマンドでコントローラー新規作成
+php artisan make:controller Backend/RoomListController
+
+◆モデルの編集)◆
+
+ディレクトリ
+\app\Models\RoomNumber.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class RoomNumber extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+
+  ↓↓リレーションの追加↓↓
+  public function room_type()
+  {
+    return $this->belongsTo(RoomType::class, 'room_type_id');
+  }
+
+  public function last_booking()
+  {
+    return $this->hasOne(BookingRoomList::class, 'room_number_id')->latest();
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  /// Admin Room List All Route 
+  Route::controller(RoomListController::class)->group(function () {
+
+    Route::get('/view/room/list', 'ViewRoomList')
+      ->name('view.room.list');
+  });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a class="has-arrow" href="javascript:;">
+        <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+        </div>
+        <div class="menu-title">Manage RoomList</div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('view.room.list') }}"><i class='bx bx-radio-circle'></i>Room List</a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoomListController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function ViewRoomList()
+  {
+
+    /*************************************************
+     * ★リレーション★
+     * 
+     * withメソッド:
+     * app\Models\RoomNumber.phpで記述した
+     * room_typeメソッドとlast_bookingメソッドを記述し、
+     * リレーションしている。
+     * 
+     * last_booking.bookingのbookingは、
+     * app\Models\BookingRoomList.phpで記述を行った
+     * bookingメソッドを指し、Bookingモデルにアクセスを行い、
+     * :(コロン)以降でカラムを指定している
+     * 
+     ************************************************/
+
+    $room_number_list = RoomNumber::with([
+      'room_type',
+      'last_booking.booking:id,check_in,check_out,status,code,name,phone'
+    ])->orderBy('room_type_id', 'asc')
+
+      /****************************************************************
+       * 
+       * ★leftJoinメソッド(左外部結合)★
+       * 
+       * どちらかのテーブルにレコード(idなど)が紐づいていない場合でも
+       * Nullで結果が返される。
+       * 
+       * 第一引数:対象のテーブル名を記述
+       * 第二引数:第一引数で指定したテーブル名.カラム名で指定
+       * 第三引数:リレーションを行うテーブル名.カラム名で指定
+       * 
+       ****************************************************************/
+
+      ->leftJoin('room_types', 'room_types.id', 'room_numbers.room_type_id')
+      ->leftJoin('booking_room_lists', 'booking_room_lists.room_number_id', 'room_numbers.id')
+      ->leftJoin('bookings', 'bookings.id', 'booking_room_lists.booking_id')
+      ->select(
+        'room_numbers.*',
+        'room_numbers.id as id',
+        'room_types.name as name',
+        'bookings.id as booking_id',
+        'bookings.check_in',
+        'bookings.check_out',
+        'bookings.name as customer_name',
+        'bookings.phone as customer_phone',
+        'bookings.status as booking_status',
+        'bookings.code as booking_no'
+      )
+      ->orderBy('room_types.id', 'asc')
+      ->orderBy('bookings.id', 'desc')
+      ->get();
+
+    return view(
+      'backend.allroom.roomlist.view_roomlist',
+      compact('room_number_list')
+    );
+  } // End Method 
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

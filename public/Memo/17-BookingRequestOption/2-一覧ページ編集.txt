@@ -1,0 +1,65 @@
+
+2-一覧ページ編集
+
+◆モデルの編集◆
+
+ディレクトリ
+\app\Models\Booking.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Booking extends Model
+{
+
+  public function user()
+  {
+    return $this->belongsTo(User::class);
+  }
+
+  public function room()
+  {
+    return $this->belongsTo(Room::class, 'rooms_id', 'id');
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\booking_list.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($allData as $key=> $item )
+  <tr>
+    <td> {{ $key+1 }} </td>
+    <td> {{ $item->code }} </td>
+    <td> {{ $item->created_at->format('d/m/Y') }} </td>
+    <td> {{ $item['user']['name'] }} </td>
+    <td> {{ $item['room']['type']['name'] }} </td>
+    <td> <span class="badge bg-primary">{{ $item->check_in }}</span> /<br> <span class="badge bg-warning text-dark">{{ $item->check_out }}</span> </td>
+    <td> {{ $item->number_of_rooms }} </td>
+    <td> {{ $item->persion }} </td>
+    <td> @if ($item->payment_status == '1')
+      <span class="text-success">Complete</span>
+      @else
+      <span class="text-danger">Pending</span>
+      @endif
+    </td>
+    <td> @if ($item->status == '1')
+      <span class="text-success">Active</span>
+      @else
+      <span class="text-danger">Pending</span>
+      @endif
+    </td>
+
+★コード解説★
+
+<td> {{ $item['room']['type']['name'] }} </td>
+
+Bookingモデルからリレーション先のRoomにroomメソッドでアクセスし、
+Roomモデルからリレーション先のRoomTypeモデルにtypeメソッドにアクセスし、
+nameカラムの情報を取得している
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

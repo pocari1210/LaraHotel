@@ -1,0 +1,76 @@
+
+3-編集ページ疎通
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Admin Booking All Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::get('/edit_booking/{id}', 'EditBooking')
+      ->name('edit_booking');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\booking_list.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+@foreach ($allData as $key=> $item )
+            <tr>
+  <td> {{ $key+1 }} </td>
+  <td>
+
+    ↓↓routeの追記↓↓
+    <a href="{{ route('edit_booking',$item->id) }}">
+      {{ $item->code }}
+    </a>
+  </td>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function EditBooking($id)
+  {
+    $editData = Booking::with('room')->find($id);
+
+    return view(
+      'backend.booking.edit_booking',
+      compact('editData')
+    );
+  } // End Method  
+
+★コード解説★
+withメソッドを使ってリレーション先のデータを取得
+
+find($id)で、\resources\views\backend\booking\booking_list.blade.phpの
+$item->idを取得
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+編集ページが疎通できていればOK
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

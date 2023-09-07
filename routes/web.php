@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Backend\TeamController;
 use App\Http\Controllers\Backend\RoomTypeController;
 use App\Http\Controllers\Backend\RoomController;
+use App\Http\Controllers\Backend\RoomListController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\BookingController;
 
@@ -164,6 +165,32 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::get('/delete/room/{id}', 'DeleteRoom')
       ->name('delete.room');
   });
+
+  /// Admin Booking All Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::get('/booking/list', 'BookingList')
+      ->name('booking.list');
+
+    Route::get('/edit_booking/{id}', 'EditBooking')
+      ->name('edit_booking');
+
+    Route::get('/download/invoice/{id}', 'DownloadInvoice')
+      ->name('download.invoice');
+  });
+
+  /// Admin Room List All Route 
+  Route::controller(RoomListController::class)->group(function () {
+
+    Route::get('/view/room/list', 'ViewRoomList')
+      ->name('view.room.list');
+
+    Route::get('/add/room/list', 'AddRoomList')
+      ->name('add.room.list');
+
+    Route::post('/store/roomlist', 'StoreRoomList')
+      ->name('store.roomlist');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 
@@ -201,5 +228,30 @@ Route::middleware(['auth'])->group(function () {
 
     Route::match(['get', 'post'], '/stripe_pay', [BookingController::class, 'stripe_pay'])
       ->name('stripe_pay');
+
+    // booking Update 
+    Route::post('/update/booking/status/{id}', 'UpdateBookingStatus')
+      ->name('update.booking.status');
+
+    Route::post('/update/booking/{id}', 'UpdateBooking')
+      ->name('update.booking');
+
+    // Assign Room Route 
+    Route::get('/assign_room/{id}', 'AssignRoom')
+      ->name('assign_room');
+
+    Route::get('/assign_room/store/{booking_id}/{room_number_id}', 'AssignRoomStore')
+      ->name('assign_room_store');
+
+    Route::get('/assign_room_delete/{id}', 'AssignRoomDelete')
+      ->name('assign_room_delete');
+
+    ////////// User Booking Route
+
+    Route::get('/user/booking', 'UserBooking')
+      ->name('user.booking');
+
+    Route::get('/user/invoice/{id}', 'UserInvoice')
+      ->name('user.invoice');
   });
 }); // End Group Auth Middleware

@@ -1,0 +1,67 @@
+
+8-AssignRoomの削除処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Auth Middleware User must have login for access this route 
+Route::middleware(['auth'])->group(function () {
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::get('/assign_room_delete/{id}', 'AssignRoomDelete')
+      ->name('assign_room_delete');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($assign_rooms as $assign_room)
+  <tr>
+    <td>{{ $assign_room->room_number->room_no }}</td>
+    <td>
+
+      ↓↓routeの追記↓↓
+      <a href="{{ route('assign_room_delete',$assign_room->id) }}" id="delete">
+        Delete
+      </a>
+    </td>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AssignRoomDelete($id)
+  {
+    $assign_room = BookingRoomList::find($id);
+    $assign_room->delete();
+
+    $notification = array(
+      'message' => 'Assign Room Deleted Successfully',
+      'alert-type' => 'success'
+    );
+    return redirect()->back()->with($notification);
+  } // End Method 
+
+D
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+Deleteボタンを押し、Room Numberが削除されていたらOK
+

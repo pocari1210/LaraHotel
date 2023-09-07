@@ -1,0 +1,129 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Auth Middleware User must have login for access this route 
+Route::middleware(['auth'])->group(function () {
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::post('/update/booking/{id}', 'UpdateBooking')
+      ->name('update.booking');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <form action="{{ route('update.booking', $editData->id) }}" method="POST">
+      @csrf
+      <div class="row">
+        <div class="col-md-12 mb-2">
+          <label for="">CheckIn</label>
+          <input type="date" required name="check_in" id="check_in" class="form-control" value="{{ $editData->check_in }}">
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <label for="">CheckOut</label>
+          <input type="date" required name="check_out" id="check_out" class="form-control" value="{{ $editData->check_out }}">
+        </div>
+
+        <div class="col-md-12 mb-2">
+          <label for="">Room</label>
+          <input type="number" required name="number_of_rooms" class="form-control" value="{{ $editData->number_of_rooms }}">
+        </div>
+
+        <input type="hidden" name="available_room" id="available_room" class="form-control">
+
+        <div class="col-md-12 mb-2">
+          <label for="">Availability: <span class="text-success availability"></span> </label>
+        </div>
+
+<script>
+  $(document).ready(function() {
+    getAvaility();
+  });
+
+  function getAvaility() {
+    var check_in = $('#check_in').val();
+    var check_out = $('#check_out').val();
+    var room_id = "{{ $editData->rooms_id }}";
+    $.ajax({
+      url: "{{ route('check_room_availability') }}",
+      data: {
+        room_id: room_id,
+        check_in: check_in,
+        check_out: check_out
+      },
+      success: function(data) {
+        $(".availability").text(data['available_room']);
+        $("#available_room").val(data['available_room']);
+      }
+    });
+  }
+</script>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function UpdateBooking(Request $request, $id)
+  {
+
+    if ($request->available_room < $request->number_of_rooms) {
+
+      $notification = array(
+        'message' => 'Something Want To Wrong!',
+        'alert-type' => 'error'
+      );
+      return redirect()->back()->with($notification);
+    }
+
+    $data = Booking::find($id);
+    $data->number_of_rooms = $request->number_of_rooms;
+    $data->check_in = date('Y-m-d', strtotime($request->check_in));
+    $data->check_out = date('Y-m-d', strtotime($request->check_out));
+    $data->save();
+
+    RoomBookedDate::where('booking_id', $id)->delete();
+
+    $sdate = date('Y-m-d', strtotime($request->check_in));
+    $edate = date('Y-m-d', strtotime($request->check_out));
+    $eldate = Carbon::create($edate)->subDay();
+    $d_period = CarbonPeriod::create($sdate, $eldate);
+    foreach ($d_period as $period) {
+      $booked_dates = new RoomBookedDate();
+      $booked_dates->booking_id = $data->id;
+      $booked_dates->room_id = $data->rooms_id;
+      $booked_dates->book_date = date('Y-m-d', strtotime($period));
+      $booked_dates->save();
+    }
+
+    $notification = array(
+      'message' => 'Booking Updated Successfully',
+      'alert-type' => 'success'
+    );
+    return redirect()->back()->with($notification);
+  }  // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+Manage Room and Dateの項目が更新できたらOK
+

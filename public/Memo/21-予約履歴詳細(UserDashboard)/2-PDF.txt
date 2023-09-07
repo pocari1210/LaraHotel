@@ -1,0 +1,67 @@
+
+
+2-PDF
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Auth Middleware User must have login for access this route 
+Route::middleware(['auth'])->group(function () {
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    ////////// User Booking Route
+
+    Route::get('/user/invoice/{id}', 'UserInvoice')
+      ->name('user.invoice');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function UserInvoice($id)
+  {
+    $editData = Booking::with('room')->find($id);
+    $pdf = Pdf::loadView(
+      'backend.booking.booking_invoice',
+      compact('editData')
+    )->setPaper('a4')->setOption([
+      'tempDir' => public_path(),
+      'chroot' => public_path(),
+    ]);
+
+    return $pdf->download('invoice.pdf');
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\dashboard\user_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($allData as $item)
+  <tr>
+    <td>
+
+      ↓↓routeの追記↓↓
+      <a href="{{ route('user.invoice',$item->id) }}">{{ $item->code }}</a>
+    </td>
+    <td>{{ $item->created_at->format('d/m/Y') }}</td>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+idをクリックし、PDFがダウンロードできたらOK

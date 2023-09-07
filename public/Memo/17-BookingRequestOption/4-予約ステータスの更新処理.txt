@@ -1,0 +1,62 @@
+
+4-予約ステータスの更新処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Auth Middleware User must have login for access this route 
+Route::middleware(['auth'])->group(function () {
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    // booking Update 
+    Route::post('/update/booking/status/{id}', 'UpdateBookingStatus')
+      ->name('update.booking.status');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  {{-- // end table responsive --}}
+
+  ↓↓routeの追記↓↓
+  <form action="{{ route('update.booking.status',$editData->id) }}" method="POST">
+    @csrf
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function UpdateBookingStatus(Request $request, $id)
+  {
+    $booking = Booking::find($id);
+    $booking->payment_status = $request->payment_status;
+    $booking->status = $request->status;
+    $booking->save();
+
+    $notification = array(
+      'message' => 'Information Updated Successfully',
+      'alert-type' => 'success'
+    );
+    return redirect()->back()->with($notification);
+  }   // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+PaymentとStatusのステータスが更新されていたらOK

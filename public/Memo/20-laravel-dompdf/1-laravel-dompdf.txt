@@ -1,0 +1,82 @@
+
+1-laravel-dompdf
+
+下記コマンドでlaravel-dompdfをインストール
+composer require barryvdh/laravel-dompdf
+
+下記コマンドでconfig/dompdf.phpを新規作成
+※編集を行う必要はない※
+
+php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Admin Booking All Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    Route::get('/download/invoice/{id}', 'DownloadInvoice')
+      ->name('download.invoice');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div class="col-md-12" style="margin-top: 20px;">
+    <button type="submit" class="btn btn-primary">Update</button>
+
+    ↓↓routeの追記↓↓
+    <a href="{{ route('download.invoice',$editData->id) }}" class="btn btn-warning px-3 radius-10">
+      <i class="lni lni-download"></i> Download Invoice
+    </a>
+  </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use Barryvdh\DomPDF\Facade\Pdf;
+
+  public function DownloadInvoice($id)
+  {
+
+    $editData = Booking::with('room')->find($id);
+    $pdf = Pdf::loadView(
+      'backend.booking.booking_invoice',
+      compact('editData')
+    )->setPaper('a4')->setOption([
+      'tempDir' => public_path(),
+      'chroot' => public_path(),
+    ]);
+    return $pdf->download('invoice.pdf');
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\booking\booking_invoice.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Download Invoiceボタンを押し、PDFファイルをダウンロードできたらOK
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

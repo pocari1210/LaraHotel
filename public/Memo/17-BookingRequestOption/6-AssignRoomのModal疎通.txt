@@ -1,0 +1,116 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Auth Middleware User must have login for access this route 
+Route::middleware(['auth'])->group(function () {
+
+  /// CHECKOUT ALL Route 
+  Route::controller(BookingController::class)->group(function () {
+
+    // Assign Room Route 
+    Route::get('/assign_room/{id}', 'AssignRoom')
+      ->name('assign_room');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\booking\edit_booking.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div style="clear: both"></div>
+  <div style="margin-top: 40px; margin-bottom:20px;">
+    <a href="javascript::void(0)" class="btn btn-primary assign_room"> Assign Room</a>
+  </div>
+
+<!-- Modal -->
+<div class="modal fade myModal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Rooms</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+
+<script>
+  $(document).ready(function() {
+    getAvaility();
+
+    $(".assign_room").on('click', function() {
+      $.ajax({
+        url: "{{ route('assign_room',$editData->id) }}",
+        success: function(data) {
+          $('.myModal .modal-body').html(data);
+          $('.myModal').modal('show');
+        }
+      });
+      return false;
+    });
+  });
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AssignRoom($booking_id)
+  {
+
+    $booking = Booking::find($booking_id);
+
+    $booking_date_array = RoomBookedDate::where('booking_id', $booking_id)
+      ->pluck('book_date')->toArray();
+
+    $check_date_booking_ids = RoomBookedDate::whereIn('book_date', $booking_date_array)
+      ->where('room_id', $booking->rooms_id)->distinct()->pluck('booking_id')->toArray();
+
+    $booking_ids = Booking::whereIn('id', $check_date_booking_ids)
+      ->pluck('id')->toArray();
+
+    $assign_room_ids = BookingRoomList::whereIn('booking_id', $booking_ids)
+      ->pluck('room_number_id')->toArray();
+
+    $room_numbers = RoomNumber::where('rooms_id', $booking->rooms_id)
+      ->whereNotIn('id', $assign_room_ids)->where('status', 'Active')->get();
+
+    return view(
+      'backend.booking.assign_room',
+      compact('booking', 'room_numbers')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\booking\assign_room.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Assign Roomのボタンを押して、ModalがでてきたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////
