@@ -1,0 +1,109 @@
+
+2-追加ページ疎通と保存処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Tesimonial All Route 
+  Route::controller(TestimonialController::class)->group(function () {
+
+    Route::get('/add/testimonial', 'AddTestimonial')
+      ->name('add.testimonial');
+
+    Route::post('/store/testimonial', 'StoreTestimonial')
+      ->name('testimonial.store');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+<ul>
+  <li> <a href="{{ route('all.testimonial') }}"><i class='bx bx-radio-circle'></i>All Testimonial</a>
+  </li>
+
+  ↓↓routeの追記↓↓
+  <li> <a href="{{ route('add.testimonial') }}"><i class='bx bx-radio-circle'></i>Add Testimonial</a>
+  </li>
+</ul>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\tesimonial\all_tesimonial.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+          <li class="breadcrumb-item active" aria-current="page">All Testimonial</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="ms-auto">
+      <div class="btn-group">
+
+        ↓↓routeの追記↓↓
+        <a href="{{ route('add.testimonial') }}" class="btn btn-primary px-5">Add Testimonial </a>
+      </div>
+    </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TestimonialController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AddTestimonial()
+  {
+    return view('backend.tesimonial.add_testimonial');
+  } // End Method 
+
+  public function StoreTestimonial(Request $request)
+  {
+    $image = $request->file('image');
+    $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+    InterventionImage::make($image)->resize(50, 50)->save('storage/upload/testimonial/' . $name_gen);
+    $save_url = 'storage/upload/testimonial/' . $name_gen;
+
+    Testimonial::insert([
+
+      'name' => $request->name,
+      'city' => $request->city,
+      'message' => $request->message,
+      'image' => $save_url,
+      'created_at' => Carbon::now(),
+    ]);
+
+    $notification = array(
+      'message' => 'Testimonial Data Inserted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('all.testimonial')->with($notification);
+  } // End Method   
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\tesimonial\add_testimonial.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+追加ページが疎通でき、保存処理がされたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
