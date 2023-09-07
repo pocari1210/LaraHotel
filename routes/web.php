@@ -210,6 +210,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/update/testimonial', 'UpdateTestimonial')
       ->name('testimonial.update');
+
+    Route::get('/delete/testimonial/{id}', 'DeleteTestimonial')
+      ->name('delete.testimonial');
   });
 }); // End Admin Group Middleware 
 

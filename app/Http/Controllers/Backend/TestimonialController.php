@@ -103,4 +103,21 @@ class TestimonialController extends Controller
     } // End Eles  
 
   } // End Method 
+
+  public function DeleteTestimonial($id)
+  {
+
+    $item = Testimonial::findOrFail($id);
+    $img = $item->image;
+    unlink($img);
+
+    Testimonial::findOrFail($id)->delete();
+
+    $notification = array(
+      'message' => 'Testimonial Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  }   // End Method   
 }

@@ -1,0 +1,69 @@
+
+4-削除処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Tesimonial All Route 
+  Route::controller(TestimonialController::class)->group(function () 
+
+    Route::get('/delete/testimonial/{id}', 'DeleteTestimonial')
+      ->name('delete.testimonial');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\tesimonial\all_tesimonial.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($testimonial as $key=> $item )
+  <tr>
+    <td>{{ $key+1 }}</td>
+    <td> <img src="{{ asset($item->image) }}" alt="" style="width:70px; height:40px;"> </td>
+    <td>{{ $item->name }}</td>
+    <td>{{ $item->city }}</td>
+    <td>
+      <a href="{{ route('edit.testimonial',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+
+      ↓↓routeの追記↓↓
+      <a href="{{ route('delete.testimonial',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+    </td>
+  </tr>
+  @endforeach
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TestimonialController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function DeleteTestimonial($id)
+  {
+
+    $item = Testimonial::findOrFail($id);
+    $img = $item->image;
+    unlink($img);
+
+    Testimonial::findOrFail($id)->delete();
+
+    $notification = array(
+      'message' => 'Testimonial Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  }   // End Method   
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+deleteボタンを押して、データが削除できていたらOK
