@@ -250,5 +250,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/user/booking', 'UserBooking')
       ->name('user.booking');
+
+    Route::get('/user/invoice/{id}', 'UserInvoice')
+      ->name('user.invoice');
   });
 }); // End Group Auth Middleware
