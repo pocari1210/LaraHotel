@@ -1,0 +1,119 @@
+
+3-編集ページ疎通と更新処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Tesimonial All Route 
+  Route::controller(TestimonialController::class)->group(function () {
+
+    Route::get('/edit/testimonial/{id}', 'EditTestimonial')
+      ->name('edit.testimonial');
+
+    Route::post('/update/testimonial', 'UpdateTestimonial')
+      ->name('testimonial.update');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\tesimonial\all_tesimonial.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($testimonial as $key=> $item )
+  <tr>
+    <td>{{ $key+1 }}</td>
+    <td> <img src="{{ asset($item->image) }}" alt="" style="width:70px; height:40px;"> </td>
+    <td>{{ $item->name }}</td>
+    <td>{{ $item->city }}</td>
+    <td>
+
+      ↓↓routeの追記↓↓
+      <a href="{{ route('edit.testimonial',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+      <a href="{{ route('delete.team',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+    </td>
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\TestimonialController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function EditTestimonial($id)
+  {
+
+    $testimonial = Testimonial::find($id);
+    return view('backend.tesimonial.edit_testimonial', compact('testimonial'));
+  } // End Method 
+
+
+  public function UpdateTestimonial(Request $request)
+  {
+
+    $test_id = $request->id;
+
+    if ($request->file('image')) {
+
+      $image = $request->file('image');
+      $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+      InterventionImage::make($image)->resize(50, 50)->save('storage/upload/testimonial/' . $name_gen);
+      $save_url = 'storage/upload/testimonial/' . $name_gen;
+
+      Testimonial::findOrFail($test_id)->update([
+
+        'name' => $request->name,
+        'city' => $request->city,
+        'message' => $request->message,
+        'image' => $save_url,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Testimonial Updated With Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.testimonial')->with($notification);
+    } else {
+
+      Testimonial::findOrFail($test_id)->update([
+
+        'name' => $request->name,
+        'city' => $request->city,
+        'message' => $request->message,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Testimonial Updated Without Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.testimonial')->with($notification);
+    } // End Eles  
+
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\tesimonial\edit_testimonial.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+編集ページが疎通でき、更新処理が実行出来たらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

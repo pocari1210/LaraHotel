@@ -47,5 +47,60 @@ class TestimonialController extends Controller
     );
 
     return redirect()->route('all.testimonial')->with($notification);
-  } // End Method   
+  } // End Method  
+
+  public function EditTestimonial($id)
+  {
+
+    $testimonial = Testimonial::find($id);
+    return view('backend.tesimonial.edit_testimonial', compact('testimonial'));
+  } // End Method 
+
+
+  public function UpdateTestimonial(Request $request)
+  {
+
+    $test_id = $request->id;
+
+    if ($request->file('image')) {
+
+      $image = $request->file('image');
+      $name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+      InterventionImage::make($image)->resize(50, 50)->save('storage/upload/testimonial/' . $name_gen);
+      $save_url = 'storage/upload/testimonial/' . $name_gen;
+
+      Testimonial::findOrFail($test_id)->update([
+
+        'name' => $request->name,
+        'city' => $request->city,
+        'message' => $request->message,
+        'image' => $save_url,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Testimonial Updated With Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.testimonial')->with($notification);
+    } else {
+
+      Testimonial::findOrFail($test_id)->update([
+
+        'name' => $request->name,
+        'city' => $request->city,
+        'message' => $request->message,
+        'created_at' => Carbon::now(),
+      ]);
+
+      $notification = array(
+        'message' => 'Testimonial Updated Without Image Successfully',
+        'alert-type' => 'success'
+      );
+
+      return redirect()->route('all.testimonial')->with($notification);
+    } // End Eles  
+
+  } // End Method 
 }
