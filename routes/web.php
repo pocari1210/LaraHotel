@@ -245,5 +245,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/assign_room_delete/{id}', 'AssignRoomDelete')
       ->name('assign_room_delete');
+
+    ////////// User Booking Route
+
+    Route::get('/user/booking', 'UserBooking')
+      ->name('user.booking');
   });
 }); // End Group Auth Middleware
