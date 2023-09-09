@@ -1,0 +1,66 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Frontend Blog  All Route 
+Route::controller(BlogController::class)->group(function () {
+
+  Route::get('/blog', 'BlogList')
+    ->name('blog.list');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\body\navbar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <li class="nav-item">
+    <a href="{{ route('blog.list') }}" class="nav-link">
+      Blog
+    </a>
+  </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\BlogController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function BlogList()
+  {
+    $blog = BlogPost::latest()->get();
+    $bcategory = BlogCategory::latest()->get();
+    $lpost = BlogPost::latest()->limit(3)->get();
+
+    return view(
+      'frontend.blog.blog_all',
+      compact('blog', 'bcategory', 'lpost')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\blog\blog_all.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+ナビゲーションからBlog一覧ページを疎通できていればOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

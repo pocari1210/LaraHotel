@@ -233,6 +233,28 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::get('/delete/blog/category/{id}', 'DeleteBlogCategory')
       ->name('delete.blog.category');
   });
+
+  /// Blog Post All Route 
+  Route::controller(BlogController::class)->group(function () {
+
+    Route::get('/all/blog/post', 'AllBlogPost')
+      ->name('all.blog.post');
+
+    Route::get('/add/blog/post', 'AddBlogPost')
+      ->name('add.blog.post');
+
+    Route::post('/store/blog/post', 'StoreBlogPost')
+      ->name('store.blog.post');
+
+    Route::get('/edit/blog/post/{id}', 'EditBlogPost')
+      ->name('edit.blog.post');
+
+    Route::post('/update/blog/post', 'UpdateBlogPost')
+      ->name('update.blog.post');
+
+    Route::get('/delete/blog/post/{id}', 'DeleteBlogPost')
+      ->name('delete.blog.post');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 
@@ -297,3 +319,14 @@ Route::middleware(['auth'])->group(function () {
       ->name('user.invoice');
   });
 }); // End Group Auth Middleware
+
+/// Frontend Blog  All Route 
+Route::controller(BlogController::class)->group(function () {
+
+  Route::get('/blog/details/{slug}', 'BlogDetails');
+
+  Route::get('/blog/cat/list/{id}', 'BlogCatList');
+
+  Route::get('/blog', 'BlogList')
+    ->name('blog.list');
+});
