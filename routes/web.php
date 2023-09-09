@@ -221,6 +221,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/blog/category', 'BlogCategory')
       ->name('blog.category');
+
+    Route::post('/store/blog/category', 'StoreBlogCategory')
+      ->name('store.blog.category');
   });
 }); // End Admin Group Middleware 
 
