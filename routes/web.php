@@ -10,6 +10,7 @@ use App\Http\Controllers\Backend\RoomController;
 use App\Http\Controllers\Backend\RoomListController;
 use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\BlogController;
+use App\Http\Controllers\Backend\CommentController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\BookingController;
 
@@ -329,4 +330,11 @@ Route::controller(BlogController::class)->group(function () {
 
   Route::get('/blog', 'BlogList')
     ->name('blog.list');
+});
+
+/// Frontend Comment All Route 
+Route::controller(CommentController::class)->group(function () {
+
+  Route::post('/store/comment/', 'StoreComment')
+    ->name('store.comment');
 });
