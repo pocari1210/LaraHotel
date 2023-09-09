@@ -227,4 +227,16 @@ class BlogController extends Controller
       compact('blog', 'namecat', 'bcategory', 'lpost')
     );
   } // End Method 
+
+  public function BlogList()
+  {
+    $blog = BlogPost::latest()->get();
+    $bcategory = BlogCategory::latest()->get();
+    $lpost = BlogPost::latest()->limit(3)->get();
+
+    return view(
+      'frontend.blog.blog_all',
+      compact('blog', 'bcategory', 'lpost')
+    );
+  } // End Method 
 }
