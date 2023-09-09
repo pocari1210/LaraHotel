@@ -233,6 +233,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::get('/delete/blog/category/{id}', 'DeleteBlogCategory')
       ->name('delete.blog.category');
   });
+
+  /// Blog Post All Route 
+  Route::controller(BlogController::class)->group(function () {
+
+    Route::get('/all/blog/post', 'AllBlogPost')
+      ->name('all.blog.post');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 

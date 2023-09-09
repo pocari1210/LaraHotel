@@ -1,0 +1,118 @@
+
+1-All Postページ疎通
+
+下記コマンドでModelとTableを新規作成
+php artisan make:model BlogPost -m
+
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\BlogPost.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class BlogPost extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_09_102926_create_blog_posts_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('blog_posts', function (Blueprint $table) {
+      $table->id();
+      $table->integer('blogcat_id');
+      $table->integer('user_id');
+      $table->string('post_titile');
+      $table->string('post_slug');
+      $table->string('post_image');
+      $table->text('short_descp');
+      $table->text('long_descp');
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+  /// Blog Post All Route 
+  Route::controller(BlogController::class)->group(function () {
+
+    Route::get('/all/blog/post', 'AllBlogPost')
+      ->name('all.blog.post');
+  });
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a class="has-arrow" href="javascript:;">
+        <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+        </div>
+        <div class="menu-title">Blog</div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('blog.category') }}"><i class='bx bx-radio-circle'></i>Blog Category </a>
+        </li>
+
+        ↓↓routeの編集↓↓
+        <li> <a href="{{ route('all.blog.post') }}"><i class='bx bx-radio-circle'></i>All Blog Post</a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\BlogController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /////////// All Blog Post Methods////////////////////
+
+  public function AllBlogPost()
+  {
+    $post = BlogPost::latest()->get();
+    return view('backend.post.all_post', compact('post'));
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+All Postページが疎通できたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
