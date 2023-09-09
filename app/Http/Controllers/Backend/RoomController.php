@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use InterventionImage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Room;
 use App\Models\Facility;
 use App\Models\MultiImage;

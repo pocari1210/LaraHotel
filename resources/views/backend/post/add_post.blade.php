@@ -26,7 +26,8 @@
         <div class="col-lg-12">
           <div class="card">
             <div class="card-body p-4">
-              <form class="row g-3">
+              <form class="row g-3" action="{{ route('store.blog.post') }}" method="post" enctype="multipart/form-data">
+                @csrf
 
                 <div class="col-md-6">
                   <label for="input7" class="form-label">Blog Category</label>
@@ -41,7 +42,7 @@
 
                 <div class="col-md-6">
                   <label for="input1" class="form-label">Post Title</label>
-                  <input type="text" name="post_titile" class="form-control" id="input1">
+                  <input type="text" name="post_title" class="form-control" id="input1">
                 </div>
 
                 <div class="col-md-12">
