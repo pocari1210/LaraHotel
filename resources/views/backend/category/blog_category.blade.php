@@ -45,7 +45,7 @@
               <td>{{ $item->category_slug }}</td>
               <td>
                 <button type="button" class="btn btn-warning px-3 radius-30" data-bs-toggle="modal" data-bs-target="#category" id="{{ $item->id }}" onclick="categoryEdit(this.id)">Edit</button>
-                <a href="{{ route('delete.team',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+                <a href="{{ route('delete.blog.category',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
               </td>
             </tr>
             @endforeach
