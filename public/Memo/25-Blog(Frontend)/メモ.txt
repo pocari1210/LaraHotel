@@ -1,0 +1,86 @@
+
+
+
+
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\BlogPost.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function user()
+  {
+    return $this->belongsTo(User::class, 'user_id', 'id');
+  }
+
+★コード解説★
+Userモデルとリレーションをしている
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Frontend Blog  All Route 
+Route::controller(BlogController::class)->group(function () {
+
+  Route::get('/blog/details/{slug}', 'BlogDetails');
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\home\blog.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <h3>
+    <a href="{{ url('blog/details/'.$item->post_slug) }}">{{ $item->post_title }}</a>
+  </h3>
+  <p>{{ $item->short_descp }}</p>
+  <a href="{{ url('blog/details/'.$item->post_slug) }}" class="read-btn">
+    Read More
+  </a>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\BlogController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function BlogDetails($slug)
+  {
+    $blog = BlogPost::where('post_slug', $slug)->first();
+    $bcategory = BlogCategory::latest()->get();
+    $lpost = BlogPost::latest()->limit(3)->get();
+
+    return view(
+      'frontend.blog.blog_details',
+      compact('blog', 'bcategory', 'lpost')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\blog\blog_details.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+blogの詳細が疎通されていたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
