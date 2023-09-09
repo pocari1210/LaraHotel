@@ -9,6 +9,7 @@ use App\Http\Controllers\Backend\RoomTypeController;
 use App\Http\Controllers\Backend\RoomController;
 use App\Http\Controllers\Backend\RoomListController;
 use App\Http\Controllers\Backend\TestimonialController;
+use App\Http\Controllers\Backend\BlogController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\BookingController;
 
@@ -213,6 +214,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/delete/testimonial/{id}', 'DeleteTestimonial')
       ->name('delete.testimonial');
+  });
+
+  /// Blog Category All Route 
+  Route::controller(BlogController::class)->group(function () {
+
+    Route::get('/blog/category', 'BlogCategory')
+      ->name('blog.category');
   });
 }); // End Admin Group Middleware 
 
