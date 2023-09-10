@@ -10,6 +10,7 @@ use App\Http\Controllers\Backend\RoomController;
 use App\Http\Controllers\Backend\RoomListController;
 use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\BlogController;
+use App\Http\Controllers\Backend\CommentController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\BookingController;
 
@@ -255,6 +256,16 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::get('/delete/blog/post/{id}', 'DeleteBlogPost')
       ->name('delete.blog.post');
   });
+
+  /// Frontend Comment All Route 
+  Route::controller(CommentController::class)->group(function () {
+
+    Route::get('/all/comment/', 'AllComment')
+      ->name('all.comment');
+
+    Route::post('/update/comment/status', 'UpdateCommentStatus')
+      ->name('update.comment.status');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 
@@ -329,4 +340,11 @@ Route::controller(BlogController::class)->group(function () {
 
   Route::get('/blog', 'BlogList')
     ->name('blog.list');
+});
+
+/// Frontend Comment All Route 
+Route::controller(CommentController::class)->group(function () {
+
+  Route::post('/store/comment/', 'StoreComment')
+    ->name('store.comment');
 });

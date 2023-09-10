@@ -1,0 +1,141 @@
+
+下記コマンドでコントローラー新規作成
+php artisan make:controller Backend/CommentController
+
+下記コマンドでModelとTable新規作成
+php artisan make:model Comment -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\Comment.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Comment extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_09_141126_create_comments_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('comments', function (Blueprint $table) {
+      $table->id();
+      $table->integer('user_id')->unsinged();
+      $table->integer('post_id')->unsinged();
+      $table->text('message');
+      $table->string('status')->default(0);
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Frontend Comment All Route 
+Route::controller(CommentController::class)->group(function () {
+
+  Route::post('/store/comment/', 'StoreComment')
+    ->name('store.comment');
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\blog\blog_details.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+              <h2>Leave A Comment</h2>
+    @php
+        if (Auth::check()) {
+           $id = Auth::user()->id;
+           $userData = App\Models\User::find($id);
+        }else {
+            $userData = null;
+        }
+    @endphp
+
+    @auth            
+      <form method="POST" action="{{ route('store.comment') }}">
+         @csrf
+        <div class="row">
+
+            <input type="hidden" name="post_id" value="{{ $blog->id }}">
+
+            @if ($userData)
+                <input type="hidden" name="user_id" value="{{ $userData->id }}">
+            @endif
+
+
+            <div class="col-lg-12 col-md-12">
+                <div class="form-group">
+                    <textarea name="message" class="form-control" id="message" cols="30" rows="8" required data-error="Write your message" placeholder="Your Message"></textarea>
+                </div>
+            </div>
+
+
+            <div class="col-lg-12 col-md-12">
+                <button type="submit" class="default-btn btn-bg-three">
+                    Post A Comment
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @else
+
+    <p>Plz <a href="{{ route('login') }}">Login</a> First for Add Comment </p>
+
+    @endauth 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function StoreComment(Request $request)
+  {
+    Comment::insert([
+      'user_id' => $request->user_id,
+      'post_id' => $request->post_id,
+      'message' => $request->message,
+      'created_at' => Carbon::now(),
+    ]);
+
+    $notification = array(
+      'message' => 'Comment Added Successfully Admin will approved',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+CommentsのDBに保存が確認とれたらOK
