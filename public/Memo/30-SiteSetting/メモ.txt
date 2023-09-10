@@ -1,0 +1,45 @@
+
+下記コマンドでseederファイル作成
+php artisan make:seeder SiteSettingTableSeeder
+
+◆Seederの編集◆
+
+ディレクトリ
+\database\seeders\SiteSettingTableSeeder.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    DB::table('site_settings')->insert([
+
+      [
+        'id' => 1,
+        'logo' => 'storage\upload\site\logo-1.png',
+        'phone' => '03-1234-5678',
+        'address' => '123 Virgil A Stanton, Virginia, USA',
+        'email' => 'info@LaraHotel.com',
+        'facebook' => '#',
+        'twitter' => '#',
+        'copyright' => 'Copyright @2023 Atoli. All Rights Reserved by LaraHotel',
+      ],
+
+    ]);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集◆
+
+ディレクトリ
+\resources\views\frontend\body\header.blade.php
+\resources\views\frontend\body\navbar.blade.php
+\resources\views\frontend\body\footer.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+@php
+$setting = App\Models\SiteSetting::find(1);
+@endphp
+
+各ファイルに、SiteSettingモデルの登録情報を疎通できたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+

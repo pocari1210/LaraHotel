@@ -28,7 +28,6 @@
             <form id="myForm" action="{{ route('team.store') }}" method="post" enctype="multipart/form-data">
               @csrf
 
-              div class="card-body">
               <div class="row mb-3">
                 <div class="col-sm-3">
                   <h6 class="mb-0"> Name</h6>
