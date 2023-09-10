@@ -1,0 +1,125 @@
+
+1-Update Site Setting疎通
+
+下記コマンドでコントローラーファイル新規作成
+php artisan make:controller Backend/SettingController
+
+下記コマンドでModelとTable新規作成
+php artisan make:model SiteSetting -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\SiteSetting.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class SiteSetting extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_10_124321_create_site_settings_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('site_settings', function (Blueprint $table) {
+      $table->id();
+      $table->string('logo')->nullable();
+      $table->string('phone')->nullable();
+      $table->text('address')->nullable();
+      $table->string('email')->nullable();
+      $table->string('facebook')->nullable();
+      $table->string('twitter')->nullable();
+      $table->string('copyright')->nullable();
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Http\Controllers\Backend\SettingController;
+
+  /// Site Setting All Route 
+  Route::controller(SettingController::class)->group(function () {
+
+    Route::get('/site/setting', 'SiteSetting')
+      ->name('site.setting');
+  });
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a class="has-arrow" href="javascript:;">
+        <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+        </div>
+        <div class="menu-title">Setting</div>
+      </a>
+      <ul>
+        <li> <a href="#"><i class='bx bx-radio-circle'></i>SMTP Setting</a>
+        </li>
+        <li> <a href="{{ route('site.setting') }}"><i class='bx bx-radio-circle'></i>Site Setting</a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\SettingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function SiteSetting()
+  {
+    $site = SiteSetting::find(1);
+
+    return view(
+      'backend.site.site_update',
+      compact('site')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\site\site_update.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Update Site Settingが疎通できていればOK
+
+コントローラーでfind(1)としているので、
+site_settingsテーブルのidカラムに1を追加する必要がある
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
