@@ -256,6 +256,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::get('/delete/blog/post/{id}', 'DeleteBlogPost')
       ->name('delete.blog.post');
   });
+
+  /// Frontend Comment All Route 
+  Route::controller(CommentController::class)->group(function () {
+
+    Route::get('/all/comment/', 'AllComment')
+      ->name('all.comment');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 
