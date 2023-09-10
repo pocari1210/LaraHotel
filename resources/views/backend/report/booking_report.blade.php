@@ -29,7 +29,7 @@
 
             <div class="card-body p-4">
 
-              <form class="row g-3" action="#" method="post" enctype="multipart/form-data">
+              <form class="row g-3" action="{{ route('search-by-date') }}" method="post" enctype="multipart/form-data">
                 @csrf
 
                 <div class="col-md-6">

@@ -273,6 +273,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/booking/report/', 'BookingReport')
       ->name('booking.report');
+
+    Route::post('/search-by-date', 'SearchByDate')
+      ->name('search-by-date');
   });
 }); // End Admin Group Middleware 
 
