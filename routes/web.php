@@ -262,6 +262,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/all/comment/', 'AllComment')
       ->name('all.comment');
+
+    Route::post('/update/comment/status', 'UpdateCommentStatus')
+      ->name('update.comment.status');
   });
 }); // End Admin Group Middleware 
 
