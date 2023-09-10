@@ -13,6 +13,7 @@ use App\Http\Controllers\Backend\BlogController;
 use App\Http\Controllers\Backend\CommentController;
 use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\Backend\SettingController;
+use App\Http\Controllers\Backend\GalleryController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\BookingController;
 
@@ -287,6 +288,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/site/update', 'SiteUpdate')
       ->name('site.update');
+  });
+
+  /// Gallery All Route 
+  Route::controller(GalleryController::class)->group(function () {
+
+    Route::get('/all/gallery', 'AllGallery')
+      ->name('all.gallery');
   });
 }); // End Admin Group Middleware 
 

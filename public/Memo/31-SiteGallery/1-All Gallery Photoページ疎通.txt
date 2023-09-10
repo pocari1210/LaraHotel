@@ -1,0 +1,113 @@
+
+1-All Gallery Photoページ疎通
+
+下記コマンドでコントローラー新規作成
+php artisan make:controller Backend/GalleryController
+
+下記コマンドでModelとTable新規作成
+php artisan make:model Gallery -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\Gallery.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Gallery extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_10_142851_create_galleries_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('galleries', function (Blueprint $table) {
+      $table->id();
+      $table->string('photo_name');
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Http\Controllers\Backend\GalleryController;
+
+  /// Gallery All Route 
+  Route::controller(GalleryController::class)->group(function () {
+
+    Route::get('/all/gallery', 'AllGallery')
+      ->name('all.gallery');
+  });
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a class="has-arrow" href="javascript:;">
+        <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+        </div>
+        <div class="menu-title">Hotel Gallery </div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('all.gallery') }}"><i class='bx bx-radio-circle'></i>All Gallery </a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\GalleryController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AllGallery()
+  {
+
+    $gallery = Gallery::latest()->get();
+
+    return view(
+      'backend.gallery.all_gallery',
+      compact('gallery')
+    );
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\gallery\all_gallery.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+All Gallery Photoページが疎通できたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
