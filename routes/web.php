@@ -295,6 +295,12 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/all/gallery', 'AllGallery')
       ->name('all.gallery');
+
+    Route::get('/add/gallery', 'AddGallery')
+      ->name('add.gallery');
+
+    Route::post('/store/gallery', 'StoreGallery')
+      ->name('store.gallery');
   });
 }); // End Admin Group Middleware 
 
