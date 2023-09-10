@@ -12,6 +12,7 @@ use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Backend\BlogController;
 use App\Http\Controllers\Backend\CommentController;
 use App\Http\Controllers\Backend\ReportController;
+use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\BookingController;
 
@@ -276,6 +277,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/search-by-date', 'SearchByDate')
       ->name('search-by-date');
+  });
+
+  /// Site Setting All Route 
+  Route::controller(SettingController::class)->group(function () {
+
+    Route::get('/site/setting', 'SiteSetting')
+      ->name('site.setting');
   });
 }); // End Admin Group Middleware 
 
