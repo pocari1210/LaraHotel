@@ -1,0 +1,90 @@
+
+
+3-AdminDashboard疎通
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Admin Group Middleware 
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+
+  // contact message admin view
+  Route::controller(ContactController::class)->group(function () {
+
+    Route::get('/contact/message', 'AdminContactMessage')
+      ->name('contact.message');
+  });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a class="has-arrow" href="javascript:;">
+        <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+        </div>
+        <div class="menu-title">Contact Message </div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('contact.message') }}"><i class='bx bx-radio-circle'></i>Contact Message </a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\ContactController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AdminContactMessage()
+  {
+
+    $contact = Contact::latest()->get();
+
+    return view(
+      'backend.contact.contact_message',
+      compact('contact')
+    );
+  } // End Method
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($contact as $key=> $item )
+  <tr>
+    <td>{{ $key+1 }}</td>
+    <td>{{ $item->name }}</td>
+    <td>{{ $item->email }}</td>
+    <td>{{ $item->phone }}</td>
+    <td>{{ $item->subject }}</td>
+    <td>{{ $item->message }}</td>
+
+    ↓↓現在の時刻と投稿された時刻の差分の表示↓↓
+    <td>{{ Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</td>
+  </tr>
+  @endforeach
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+adminのdashboardに、Contactページより投稿された内容が
+疎通されていたらOK

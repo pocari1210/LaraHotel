@@ -15,7 +15,7 @@ use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\GalleryController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
-use App\Http\Controllers\Frontend\BookingController;
+use App\Http\Controllers\Frontend\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -314,6 +314,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::post('/delete/gallery/multiple', 'DeleteGalleryMultiple')
       ->name('delete.gallery.multiple');
   });
+
+  // contact message admin view
+  Route::controller(ContactController::class)->group(function () {
+
+    Route::get('/contact/message', 'AdminContactMessage')
+      ->name('contact.message');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 
@@ -402,4 +409,14 @@ Route::controller(GalleryController::class)->group(function () {
 
   Route::get('/gallery', 'ShowGallery')
     ->name('show.gallery');
+});
+
+// Frontend Contact All Route 
+Route::controller(ContactController::class)->group(function () {
+
+  Route::get('/contact', 'ContactUs')
+    ->name('contact.us');
+
+  Route::post('/store/contact', 'StoreContactUs')
+    ->name('store.contact');
 });
