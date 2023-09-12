@@ -1,0 +1,72 @@
+
+
+5-GalleryをFrontend疎通
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Frontend Gallery All Route 
+Route::controller(GalleryController::class)->group(function () {
+
+  Route::get('/gallery', 'ShowGallery')
+    ->name('show.gallery');
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\body\navbar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <li class="nav-item">
+    <a href="{{ route('show.gallery') }}" class="nav-link">
+      Gallery
+    </a>
+  </li>
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\GalleryController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function ShowGallery()
+  {
+    $gallery = Gallery::latest()->get();
+
+    return view(
+      'frontend.gallery.show_gallery',
+      compact('gallery')
+    );
+  } // End Method
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\frontend\gallery\show_gallery.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Frontendのナビゲーションより、galleryページに遷移し、
+画像が反映されていたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+

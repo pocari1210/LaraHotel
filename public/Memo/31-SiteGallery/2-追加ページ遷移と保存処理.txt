@@ -1,0 +1,86 @@
+
+2-追加ページ遷移と保存処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Gallery All Route 
+  Route::controller(GalleryController::class)->group(function () {
+
+    Route::get('/add/gallery', 'AddGallery')
+      ->name('add.gallery');
+
+    Route::post('/store/gallery', 'StoreGallery')
+      ->name('store.gallery');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\gallery\all_gallery.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <div class="ms-auto">
+    <div class="btn-group">
+
+      ↓↓routeの追記↓↓
+      <a href="{{ route('add.gallery') }}" class="btn btn-primary px-5">Add Gallery </a>
+    </div>
+  </div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\GalleryController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AddGallery()
+  {
+    return view('backend.gallery.add_gallery');
+  } // End Method 
+
+  public function StoreGallery(Request $request)
+  {
+
+    $images = $request->file('photo_name');
+
+    foreach ($images as $img) {
+      $name_gen = hexdec(uniqid()) . '.' . $img->getClientOriginalExtension();
+      InterventionImage::make($img)->resize(550, 550)->save('storage/upload/gallery/' . $name_gen);
+      $save_url = 'storage/upload/gallery/' . $name_gen;
+
+      Gallery::insert([
+        'photo_name' => $save_url,
+        'created_at' => Carbon::now(),
+      ]);
+    } //  end foreach 
+
+    $notification = array(
+      'message' => 'Gallery Inserted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('all.gallery')->with($notification);
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\gallery\add_gallery.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+追加ページに遷移し、画像を保存できればOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

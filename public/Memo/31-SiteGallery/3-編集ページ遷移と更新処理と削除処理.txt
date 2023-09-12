@@ -1,0 +1,108 @@
+
+
+3-編集ページ遷移と更新処理と削除処理
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Gallery All Route 
+  Route::controller(GalleryController::class)->group(function () {
+
+    Route::get('/edit/gallery/{id}', 'EditGallery')
+      ->name('edit.gallery');
+
+    Route::post('/update/gallery', 'UpdateGallery')
+      ->name('update.gallery');
+
+    Route::get('/delete/gallery/{id}', 'DeleteGallery')
+      ->name('delete.gallery');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\gallery\all_gallery.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <td>
+    <a href="{{ route('edit.gallery',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+    <a href="{{ route('delete.gallery',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+  </td>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\GalleryController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function EditGallery($id)
+  {
+
+    $gallery = Gallery::find($id);
+    return view('backend.gallery.edit_gallery', compact('gallery'));
+  } // End Method 
+
+  public function UpdateGallery(Request $request)
+  {
+
+    $gal_id = $request->id;
+    $img = $request->file('photo_name');
+
+    $name_gen = hexdec(uniqid()) . '.' . $img->getClientOriginalExtension();
+    Image::make($img)->resize(550, 550)->save('storage/upload/gallery/' . $name_gen);
+    $save_url = 'storage/upload/gallery/' . $name_gen;
+
+    Gallery::find($gal_id)->update([
+      'photo_name' => $save_url,
+    ]);
+
+    $notification = array(
+      'message' => 'Gallery Updated Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('all.gallery')->with($notification);
+  } // End Method 
+
+  public function DeleteGallery($id)
+  {
+
+    $item = Gallery::findOrFail($id);
+
+    $img = $item->photo_name;
+    unlink($img);
+
+    Gallery::findOrFail($id)->delete();
+
+    $notification = array(
+      'message' => 'Gallery Image Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  }   // End Method 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+\resources\views\backend\gallery\edit_gallery.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+編集ページに遷移し、更新処理が行え、
+削除が行えたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
