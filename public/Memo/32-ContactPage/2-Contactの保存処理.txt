@@ -1,0 +1,72 @@
+
+2-Contactの保存処理
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Frontend Contact All Route 
+Route::controller(ContactController::class)->group(function () {
+
+  Route::post('/store/contact', 'StoreContactUs')
+    ->name('store.contact');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\contact\contact_us.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <form method="POST" action="{{ route('store.contact') }}">
+    @csrf
+
+@php
+$setting = App\Models\SiteSetting::find(1);
+@endphp
+
+★コード解説★
+SiteSettingsで登録したメールアドレスや電話番号を
+疎通している
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\ContactController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function StoreContactUs(Request $request)
+  {
+
+    Contact::insert([
+      'name' => $request->name,
+      'email' => $request->email,
+      'phone' => $request->phone,
+      'subject' => $request->subject,
+      'message' => $request->message,
+      'created_at' => Carbon::now(),
+    ]);
+
+    $notification = array(
+      'message' => 'Your Message Send Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } // End Method
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+DBを確認し、レコードが追記されていたらOK
+
