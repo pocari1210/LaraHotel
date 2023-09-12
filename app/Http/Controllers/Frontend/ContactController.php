@@ -33,4 +33,15 @@ class ContactController extends Controller
 
     return redirect()->back()->with($notification);
   } // End Method
+
+  public function AdminContactMessage()
+  {
+
+    $contact = Contact::latest()->get();
+
+    return view(
+      'backend.contact.contact_message',
+      compact('contact')
+    );
+  } // End Method
 }

@@ -314,6 +314,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::post('/delete/gallery/multiple', 'DeleteGalleryMultiple')
       ->name('delete.gallery.multiple');
   });
+
+  // contact message admin view
+  Route::controller(ContactController::class)->group(function () {
+
+    Route::get('/contact/message', 'AdminContactMessage')
+      ->name('contact.message');
+  });
 }); // End Admin Group Middleware 
 
 /// Room All Route 
