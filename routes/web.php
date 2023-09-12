@@ -396,3 +396,10 @@ Route::controller(CommentController::class)->group(function () {
   Route::post('/store/comment/', 'StoreComment')
     ->name('store.comment');
 });
+
+/// Frontend Gallery All Route 
+Route::controller(GalleryController::class)->group(function () {
+
+  Route::get('/gallery', 'ShowGallery')
+    ->name('show.gallery');
+});
