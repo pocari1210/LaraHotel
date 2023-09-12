@@ -15,7 +15,7 @@ use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\GalleryController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
-use App\Http\Controllers\Frontend\BookingController;
+use App\Http\Controllers\Frontend\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -402,4 +402,11 @@ Route::controller(GalleryController::class)->group(function () {
 
   Route::get('/gallery', 'ShowGallery')
     ->name('show.gallery');
+});
+
+// Frontend Contact All Route 
+Route::controller(ContactController::class)->group(function () {
+
+  Route::get('/contact', 'ContactUs')
+    ->name('contact.us');
 });

@@ -1,0 +1,104 @@
+
+1-Contactページ疎通
+
+下記コマンドでコントローラー新規作成
+php artisan make:controller Frontend/GalleryController
+
+下記コマンドでModelとTable新規作成
+php artisan make:model Contact -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\Contact.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class Contact extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_12_144228_create_contacts_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('contacts', function (Blueprint $table) {
+      $table->id();
+      $table->string('name');
+      $table->string('email');
+      $table->string('phone');
+      $table->text('subject');
+      $table->text('message');
+      $table->timestamps();
+    });
+  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+// Frontend Contact All Route 
+Route::controller(ContactController::class)->group(function () {
+
+  Route::get('/contact', 'ContactUs')
+    ->name('contact.us');
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\body\navbar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <li class="nav-item">
+    <a href="{{ route('contact.us') }}" class="nav-link">
+      Contact
+    </a>
+  </li>
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\ContactController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function ContactUs()
+  {
+    return view('frontend.contact.contact_us');
+  } // End Method
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\frontend\body\navbar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+ナビゲーションのContactより、ページに遷移ができたらOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
