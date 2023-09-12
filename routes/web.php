@@ -310,6 +310,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/delete/gallery/{id}', 'DeleteGallery')
       ->name('delete.gallery');
+
+    Route::post('/delete/gallery/multiple', 'DeleteGalleryMultiple')
+      ->name('delete.gallery.multiple');
   });
 }); // End Admin Group Middleware 
 

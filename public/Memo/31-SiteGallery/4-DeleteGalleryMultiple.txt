@@ -1,0 +1,88 @@
+
+4-DeleteGalleryMultiple
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Gallery All Route 
+  Route::controller(GalleryController::class)->group(function () {
+
+    Route::post('/delete/gallery/multiple', 'DeleteGalleryMultiple')
+      ->name('delete.gallery.multiple');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\gallery\all_gallery.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+        <form action="{{ route('delete.gallery.multiple') }}" method="POST">
+          @csrf
+
+          <table class="table table-striped table-bordered" style="width:100%">
+            <thead>
+              <tr>
+                <th width="50px">Select</th>
+                <th width="50px">Sl</th>
+                <th>Image</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach ($gallery as $key=> $item )
+              <tr>
+                <td>
+                  <input type="checkbox" name="selectedItem[]" value="{{ $item->id }}">
+                </td>
+
+          </table>
+          <button type="submit" class="btn btn-danger">Delete Selected</button>
+        </form>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\GalleryController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function DeleteGalleryMultiple(Request $request)
+  {
+
+    $selectedItems = $request->input('selectedItem', []);
+
+    foreach ($selectedItems as $itemId) {
+      $item = Gallery::find($itemId);
+      $img = $item->photo_name;
+      unlink($img);
+      $item->delete();
+    }
+
+    $notification = array(
+      'message' => 'Selected Image Deleted Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } // End Method 
+
+★コード解説★
+$request->input(‘キー名’, ‘デフォルト値’)
+
+参考サイト
+https://prograshi.com/framework/laravel/laravel-request-methods/#:~:text=%24request-%3Einput%20%28%E2%80%98%E3%82%AD%E3%83%BC%E5%90%8D%E2%80%99%2C%20%E2%80%98%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E5%80%A4%E2%80%99%29,input%E3%81%AF%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9F%E3%82%AD%E3%83%BC%E5%90%8D%E3%81%AE%E5%80%A4%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B%E3%80%82%20%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E5%80%A4%E3%81%8C%E3%81%82%E3%82%8B%E5%A0%B4%E5%90%88%E3%81%AF%E3%80%81%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9F%E3%82%AD%E3%83%BC%E3%81%AB%E3%83%87%E3%83%BC%E3%82%BF%E3%81%8C%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F%E3%81%A8%E3%81%8D%E3%81%AB%E3%81%9D%E3%81%AE%E5%80%A4%E3%82%92%E3%82%BB%E3%83%83%E3%83%88%E3%81%97%E3%81%A6%E3%81%8F%E3%82%8C%E3%82%8B%E3%80%82%20get%E3%81%AE%E9%80%B2%E5%8C%96%E7%89%88%E3%81%AE%E3%82%88%E3%81%86%E3%81%AA%E6%84%9F%E3%81%98%E3%81%A7%E3%80%81%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E5%80%A4%E3%82%92%E8%A8%AD%E5%AE%9A%E3%81%97%E3%81%AA%E3%81%84%E6%99%82%E3%81%AFget%E3%81%A8%E3%81%BB%E3%81%BC%E5%90%8C%E3%81%98%E6%A9%9F%E8%83%BD%E3%81%A8%E3%81%AA%E3%82%8B%E3%80%82
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+チェックボックスにチェックをいれた画像が削除できていたらOK
