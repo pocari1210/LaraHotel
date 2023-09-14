@@ -16,7 +16,16 @@ class BookConfirm extends Mailable
   /**
    * Create a new message instance.
    */
-  public function __construct()
+
+  /** 
+   * 
+   * constructメソッドの引数を
+   * Frontend\BookingControllerで記述を行った
+   * $dataとしている
+   * 
+   */
+
+  public function __construct(private $data)
   {
     //
   }
@@ -27,7 +36,7 @@ class BookConfirm extends Mailable
   public function envelope(): Envelope
   {
     return new Envelope(
-      subject: 'Book Confirm',
+      subject: 'Your Booking Is Confirm',
     );
   }
 
@@ -36,8 +45,19 @@ class BookConfirm extends Mailable
    */
   public function content(): Content
   {
+
+    /******************************************
+     * 
+     * $this->dataはconstructメソッドで記述を行った
+     * private $dataを指定している
+     * 
+     ********************************************/
+
+    $booking = $this->data;
+
     return new Content(
-      view: 'view.name',
+      view: 'mail.booking_mail',
+      with: ['booking' => $this->data],
     );
   }
 

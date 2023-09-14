@@ -1,0 +1,68 @@
+
+2-予約完了メール送信
+
+
+◆Mailファイルの編集◆
+
+ディレクトリ
+\app\Mail\BookConfirm.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /** 
+   * 
+   * constructメソッドの引数を
+   * Frontend\BookingControllerで記述を行った
+   * $dataとしている
+   * 
+   */
+
+  public function __construct(private $data)
+  {
+    //
+  }
+
+  public function content(): Content
+  {
+
+    /******************************************
+     * 
+     * $this->dataはconstructメソッドで記述を行った
+     * private $dataを指定している
+     * 
+     ********************************************/
+
+    $booking = $this->data;
+
+    return new Content(
+      view: 'mail.booking_mail',
+      with: ['booking' => $this->data],
+    );
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\mail\booking_mail.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <h4> check in : {{ $booking['check_in'] }}</h4>
+  <h4> check Out : {{ $booking['check_out'] }}</h4>
+  <h4> User Name: {{ $booking['name'] }}</h4>
+  <h4> Email : {{ $booking['email'] }}</h4>
+  <h4> Phone : {{ $booking['phone'] }}</h4>
+
+★コード解説★
+\app\Mail\BookConfirmで記述を行ったContentメソッドのbookingから
+情報を取得している
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+予約のステータスを更新し、mailtrapから
+メールの送信が確認とれたらOK
+

@@ -16,6 +16,7 @@ use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\GalleryController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\ContactController;
+use App\Http\Controllers\Frontend\BookingController;
 
 /*
 |--------------------------------------------------------------------------
