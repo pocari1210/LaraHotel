@@ -1,0 +1,47 @@
+
+下記コマンドでMailファイル新規作成
+php artisan make:mail BookConfirm
+
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookConfirm;
+
+  public function UpdateBookingStatus(Request $request, $id)
+  {
+
+    /// Start Sent Email 
+
+    $sendmail = Booking::find($id);
+
+    $data = [
+      'check_in' => $sendmail->check_in,
+      'check_out' => $sendmail->check_out,
+      'name' => $sendmail->name,
+      'email' => $sendmail->email,
+      'phone' => $sendmail->phone,
+    ];
+
+    Mail::to($sendmail->email)->send(new BookConfirm($data));
+
+    /// End Sent Email 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Mailファイル編集◆
+
+ディレクトリ
+\app\Mail\BookConfirm.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
