@@ -16,6 +16,7 @@ use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\GalleryController;
 use App\Http\Controllers\Frontend\FrontendRoomController;
 use App\Http\Controllers\Frontend\ContactController;
+use App\Http\Controllers\Frontend\BookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -288,6 +289,16 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/site/update', 'SiteUpdate')
       ->name('site.update');
+  });
+
+  /// Admin Room List All Route 
+  Route::controller(SettingController::class)->group(function () {
+
+    Route::get('/smtp/setting', 'SmtpSetting')
+      ->name('smtp.setting');
+
+    Route::post('/smtp/update', 'SmtpUpdate')
+      ->name('smtp.update');
   });
 
   /// Gallery All Route 

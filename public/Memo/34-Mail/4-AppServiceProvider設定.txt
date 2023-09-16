@@ -1,27 +1,21 @@
-<?php
 
-namespace App\Providers;
+4-AppServiceProvider設定
 
-use Illuminate\Support\ServiceProvider;
+DBでmailtrapの設定を管理できるよう設定
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
 use App\Models\SmtpSetting;
 use Config;
 
-class AppServiceProvider extends ServiceProvider
-{
-  /**
-   * Register any application services.
-   */
-  public function register(): void
-  {
-    //
-  }
-
-  /**
-   * Bootstrap any application services.
-   */
   public function boot(): void
   {
-
     /********************************************************
      * 
      * ★\Schema::hasTable('テーブル名')★
@@ -49,4 +43,8 @@ class AppServiceProvider extends ServiceProvider
       }
     } // end if
   }
-}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+予約のステータスを変更し、メールが送信できてたらOK

@@ -10,6 +10,8 @@ use InterventionImage;
 use Illuminate\Support\Facades\Auth;
 use Stripe;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookConfirm;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\Room;
@@ -252,6 +254,22 @@ class BookingController extends Controller
     $booking->payment_status = $request->payment_status;
     $booking->status = $request->status;
     $booking->save();
+
+    /// Start Sent Email 
+
+    $sendmail = Booking::find($id);
+
+    $data = [
+      'check_in' => $sendmail->check_in,
+      'check_out' => $sendmail->check_out,
+      'name' => $sendmail->name,
+      'email' => $sendmail->email,
+      'phone' => $sendmail->phone,
+    ];
+
+    Mail::to($sendmail->email)->send(new BookConfirm($data));
+
+    /// End Sent Email 
 
     $notification = array(
       'message' => 'Information Updated Successfully',
