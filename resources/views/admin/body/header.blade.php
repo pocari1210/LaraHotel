@@ -28,7 +28,7 @@
               $ncount = Auth::user()->unreadNotifications()->count();
               @endphp
 
-              <span class="alert-count">{{ $ncount }}</span>
+              <span class="alert-count" id="notification-count">{{ $ncount }}</span>
               <i class='bx bx-bell'></i>
             </a>
             <div class="dropdown-menu dropdown-menu-end">
@@ -46,7 +46,7 @@
 
                 @forelse ($user->notifications as $notification)
 
-                <a class="dropdown-item" href="javascript:;">
+                <a class="dropdown-item" href="javascript:;" onclick="markNotificationAsRead('{{ $notification->id }}')">
                   <div class="d-flex align-items-center">
                     <div class="notify bg-light-success text-success"><i class='bx bx-check-square'></i>
                     </div>
@@ -291,3 +291,35 @@
     </nav>
   </div>
 </header>
+
+<script>
+  function markNotificationAsRead(notificationId) {
+
+    fetch('/mark-notification-as-read/' + notificationId, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({})
+      })
+
+      /************************************************************
+       * 
+       * ★thenメソッド★
+       * 成功した時の処理
+       * 
+       * ★catchメソッド★
+       * 失敗した時の処理
+       * 
+       ************************************************************/
+
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('notification-count').textContent = data.count;
+      })
+      .catch(error => {
+        console.log('Error', error);
+      });
+  }
+</script>

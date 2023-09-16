@@ -431,3 +431,9 @@ Route::controller(ContactController::class)->group(function () {
   Route::post('/store/contact', 'StoreContactUs')
     ->name('store.contact');
 });
+
+/// Notification All Route 
+Route::controller(BookingController::class)->group(function () {
+
+  Route::post('/mark-notification-as-read/{notification}', 'MarkAsRead');
+});
