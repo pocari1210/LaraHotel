@@ -1,0 +1,51 @@
+
+下記コマンドで通知用のTable新規作成
+php artisan notifications:table
+
+下記コマンドでnotification新規作成
+php artisan make:notification BookingComplete
+
+
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use App\Models\User;
+use App\Notifications\BookingComplete;
+use Illuminate\Support\Facades\Notification;
+
+  public function CheckoutStore(Request $request)
+  {
+
+    $user = User::where('role', 'admin')->get();
+
+    Notification::send($user, new BookingComplete($request->name));
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Notificationファイルの編集◆
+
+ディレクトリ
+\app\Notifications\BookingComplete.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
