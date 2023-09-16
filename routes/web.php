@@ -291,6 +291,16 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
       ->name('site.update');
   });
 
+  /// Admin Room List All Route 
+  Route::controller(SettingController::class)->group(function () {
+
+    Route::get('/smtp/setting', 'SmtpSetting')
+      ->name('smtp.setting');
+
+    Route::post('/smtp/update', 'SmtpUpdate')
+      ->name('smtp.update');
+  });
+
   /// Gallery All Route 
   Route::controller(GalleryController::class)->group(function () {
 

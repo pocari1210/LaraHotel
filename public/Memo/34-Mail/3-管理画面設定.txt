@@ -1,0 +1,139 @@
+
+
+下記コマンドでModelとTable新規作成
+php artisan make:model SmtpSetting -m
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\SmtpSetting.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+class SmtpSetting extends Model
+{
+  use HasFactory;
+  protected $guarded = [];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Tableの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_16_014959_create_smtp_settings_table.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function up(): void
+  {
+    Schema::create('smtp_settings', function (Blueprint $table) {
+      $table->id();
+      $table->string('mailer')->nullable();
+      $table->string('host')->nullable();
+      $table->string('port')->nullable();
+      $table->string('username')->nullable();
+      $table->string('password')->nullable();
+      $table->string('encryption')->nullable();
+      $table->string('from_address')->nullable();
+      $table->timestamps();
+    });
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Admin Room List All Route 
+  Route::controller(SettingController::class)->group(function () {
+
+    Route::get('/smtp/setting', 'SmtpSetting')
+      ->name('smtp.setting');
+
+    Route::post('/smtp/update', 'SmtpUpdate')
+      ->name('smtp.update');
+  });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <li>
+      <a class="has-arrow" href="javascript:;">
+        <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+        </div>
+        <div class="menu-title">Setting</div>
+      </a>
+      <ul>
+        <li> <a href="{{ route('smtp.setting') }}"><i class='bx bx-radio-circle'></i>SMTP Setting</a>
+        </li>
+      </ul>
+    </li>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\SettingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function SmtpSetting()
+  {
+    $smtp = SmtpSetting::find(1);
+
+    return view(
+      'backend.setting.smpt_update',
+      compact('smtp')
+    );
+  } // End Method 
+
+  public function SmtpUpdate(Request $request)
+  {
+
+    $smtp_id = $request->id;
+
+    SmtpSetting::find($smtp_id)->update([
+      'mailer' => $request->mailer,
+      'host' => $request->host,
+      'port' => $request->port,
+      'username' => $request->username,
+      'password' => $request->password,
+      'encryption' => $request->encryption,
+      'from_address' => $request->from_address,
+    ]);
+
+    $notification = array(
+      'message' => 'Smtp Setting Updated Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+Update Smtpページが疎通できていればOK
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
