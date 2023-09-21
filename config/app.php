@@ -158,6 +158,7 @@ return [
   'providers' => ServiceProvider::defaultProviders()->merge([
     Intervention\Image\ImageServiceProvider::class,
     Spatie\Permission\PermissionServiceProvider::class,
+    Maatwebsite\Excel\ExcelServiceProvider::class,
     /*
          * Package Service Providers...
          */
@@ -184,7 +185,8 @@ return [
     */
 
   'aliases' => Facade::defaultAliases()->merge([
-    'InterventionImage' => Intervention\Image\Facades\Image::class
+    'InterventionImage' => Intervention\Image\Facades\Image::class,
+    'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     // 'Example' => App\Facades\Example::class,
   ])->toArray(),
 
