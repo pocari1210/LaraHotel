@@ -1,0 +1,74 @@
+
+◆参考サイト◆
+https://spatie.be/docs/laravel-permission/v5/installation-laravel
+
+下記コマンドでライブラリのインストール
+composer require spatie/laravel-permission
+
+◆Configの編集◆
+
+ディレクトリ
+\config\app.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    /*
+     * Application Service Providers...
+     */
+    ↓↓追記↓↓
+    App\Providers\AuthServiceProvider::class,
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+下記コマンドでファイル作成
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+
+ディレクトリ
+\config\permission.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+特になし
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+◆テーブルの編集◆
+
+ディレクトリ
+\database\migrations\2023_09_21_125613_create_permission_tables.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    Schema::create($tableNames['permissions'], function (Blueprint $table) {
+      $table->bigIncrements('id'); // permission id
+      $table->string('name');       // For MySQL 8.0 use string('name', 125);
+      $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
+      // ↓↓追記↓↓
+      $table->string('group_name');
+      $table->timestamps();
+
+      $table->unique(['name', 'guard_name']);
+    });
+
+★コード解説★
+permissionsテーブルのgroup_nameカラムはのちに使う為、
+記述を行う
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\User.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+{
+  ↓↓HasRolesをuse内に追記し、importする↓↓
+  use HasApiTokens, HasFactory, Notifiable, HasRoles;
