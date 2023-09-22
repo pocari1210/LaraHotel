@@ -385,6 +385,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::get('/delete/roles/{id}', 'DeleteRoles')
       ->name('delete.roles');
+
+    Route::get('/all/roles/permission', 'AddRolesPermission')
+      ->name('add.roles.permission');
   });
 }); // End Admin Group Middleware 
 
