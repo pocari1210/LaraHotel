@@ -1,0 +1,109 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Role All Route 
+  Route::controller(RoleController::class)->group(function () {
+
+    Route::get('/all/roles', 'AllRoles')
+      ->name('all.roles');
+
+    Route::get('/add/roles', 'AddRoles')
+      ->name('add.roles');
+
+    Route::post('/store/roles', 'StoreRoles')
+      ->name('store.roles');
+  });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    <div class="menu-title">Role & Permission </div>
+  </a>
+  <ul>
+    <li> <a href="{{ route('all.permission') }}"><i class='bx bx-radio-circle'></i>All Permission </a>
+    </li>
+
+    ↓↓routeの追記↓↓
+    <li> <a href="{{ route('all.roles') }}"><i class='bx bx-radio-circle'></i>All Roles </a>
+    </li>
+  </ul>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoleController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /////////// All Roles Mehtod //////////////////////
+
+  public function AllRoles()
+  {
+    $roles = Role::latest()->get();
+
+    return view(
+      'backend.pages.roles.all_roles',
+      compact('roles')
+    );
+  } // End Method
+
+  public function AddRoles()
+  {
+    return view('backend.pages.roles.add_roles');
+  } // End Method
+
+  public function StoreRoles(Request $request)
+  {
+
+    Role::create([
+      'name' => $request->name,
+    ]);
+
+    $notification = array(
+      'message' => 'Role Created Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('all.roles')->with($notification);
+  } // End Method
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先①)◆
+
+ディレクトリ
+\resources\views\backend\pages\roles\all_roles.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先②)◆
+
+ディレクトリ
+\resources\views\backend\pages\roles\add_roles.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+一覧ページが遷移でき、追加ページから保存処理ができたらOK
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
