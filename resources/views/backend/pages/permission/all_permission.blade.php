@@ -18,44 +18,53 @@
       <div class="btn-group">
         <a href="{{ route('add.permission') }}" class="btn btn-primary px-5">Add Permission </a>
       </div>
-    </div>
-  </div>
-  <!--end breadcrumb-->
 
-  <hr />
-  <div class="card">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table id="example" class="table table-striped table-bordered" style="width:100%">
-          <thead>
-            <tr>
-              <th>Sl</th>
-              <th>Permission Name </th>
-              <th>Permission Group</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+      <div class="btn-group">
+        <a href="{{ route('import.permission') }}" class="btn btn-warning px-5">Import </a>
+      </div>
 
-          <tbody>
-            @foreach ($permissions as $key=> $item )
-            <tr>
-              <td>{{ $key+1 }}</td>
-              <td>{{ $item->name }}</td>
-              <td>{{ $item->group_name }}</td>
-              <td>
-                <a href="{{ route('edit.permission',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
-                <a href="{{ route('delete.permission',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
-              </td>
-            </tr>
-            @endforeach
-          </tbody>
-
-        </table>
+      <div class="btn-group">
+        <a href="{{ route('add.permission') }}" class="btn btn-danger px-5">Export </a>
       </div>
     </div>
   </div>
+</div>
+<!--end breadcrumb-->
 
-  <hr />
+<hr />
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+          <tr>
+            <th>Sl</th>
+            <th>Permission Name </th>
+            <th>Permission Group</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @foreach ($permissions as $key=> $item )
+          <tr>
+            <td>{{ $key+1 }}</td>
+            <td>{{ $item->name }}</td>
+            <td>{{ $item->group_name }}</td>
+            <td>
+              <a href="{{ route('edit.permission',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+              <a href="{{ route('delete.permission',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+            </td>
+          </tr>
+          @endforeach
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr />
 
 </div>
 
