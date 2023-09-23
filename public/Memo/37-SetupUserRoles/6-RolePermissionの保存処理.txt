@@ -1,0 +1,69 @@
+
+
+
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Role All Route 
+  Route::controller(RoleController::class)->group(function () {
+
+    Route::post('/role/permission/store', 'RolePermissionStore')
+      ->name('role.permission.store');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\pages\rolesetup\add_roles_permission.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <form class="row g-3" action="{{ route('role.permission.store') }}" method="post" enctype="multipart/form-data">
+    @csrf
+
+  @foreach ($permissions as $permission)
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" name="permission[]" id="flexCheckDefault{{ $permission->id }}" value="{{ $permission->id }}">
+    <label class="form-check-label" for="flexCheckDefault{{ $permission->id }}">{{ $permission->name }} </label>
+  </div>
+  @endforeach
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoleController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function RolePermissionStore(Request $request)
+  {
+
+    $data = array();
+    $permissions = $request->permission;
+
+    foreach ($permissions as $key => $item) {
+      $data['role_id'] = $request->role_id;
+      $data['permission_id'] = $item;
+
+      DB::table('role_has_permissions')->insert($data);
+    } // end foreach
+
+    $notification = array(
+      'message' => 'Role Permission Added Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->back()->with($notification);
+  } // End Method
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
