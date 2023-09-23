@@ -1,0 +1,84 @@
+
+◆Modelの編集◆
+
+ディレクトリ
+\app\Models\User.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public static function roleHasPermissions($role, $permissions)
+  {
+    $hasPermission = true;
+    foreach ($permissions as $permission) {
+      if (!$role->hasPermissionTo($permission->name)) {
+        $hasPermission = false;
+      }
+      return $hasPermission;
+    }
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Role All Route 
+  Route::controller(RoleController::class)->group(function () {
+
+    Route::get('/admin/edit/roles/{id}', 'AdminEditRoles')
+      ->name('admin.edit.roles');
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\backend\pages\rolesetup\all_roles_permission.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  <td>
+
+    ↓↓routeの編集↓↓
+    <a href="{{ route('admin.edit.roles',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
+    <a href="{{ route('delete.roles',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>
+  </td>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoleController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AdminEditRoles($id)
+  {
+    $role = Role::find($id);
+    $permissions = Permission::all();
+    $permission_groups = User::getpermissionGroups();
+
+    return view(
+      'backend.pages.rolesetup.edit_roles_permission',
+      compact('role', 'permissions', 'permission_groups')
+    );
+  } // End Method
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移先)◆
+
+ディレクトリ
+
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////

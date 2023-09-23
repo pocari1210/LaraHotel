@@ -392,10 +392,11 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
     Route::post('/role/permission/store', 'RolePermissionStore')
       ->name('role.permission.store');
 
-    Route::get(
-      '/all/roles/permission',
-      'AllRolesPermission'
-    )->name('all.roles.permission');
+    Route::get('/all/roles/permission', 'AllRolesPermission')
+      ->name('all.roles.permission');
+
+    Route::get('/admin/edit/roles/{id}', 'AdminEditRoles')
+      ->name('admin.edit.roles');
   });
 }); // End Admin Group Middleware 
 
