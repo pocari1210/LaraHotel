@@ -235,4 +235,22 @@ class RoleController extends Controller
       compact('role', 'permissions', 'permission_groups')
     );
   } // End Method
+
+  public function AdminRolesUpdate(Request $request, $id)
+  {
+
+    $role = Role::find($id);
+    $permissions = $request->permission;
+
+    if (!empty($permissions)) {
+      $role->syncPermissions($permissions);
+    }
+
+    $notification = array(
+      'message' => 'Role Permission Updated Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('all.roles.permission')->with($notification);
+  } // End Method
 }
