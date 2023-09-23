@@ -139,4 +139,37 @@ class AdminController extends Controller
       compact('roles')
     );
   } // End Method 
+
+  public function StoreAdmin(Request $request)
+  {
+
+    $user = new User();
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->phone = $request->phone;
+    $user->address = $request->address;
+    $user->password =  Hash::make($request->password);
+    $user->role = 'admin';
+    $user->status = 'active';
+    $user->save();
+
+    /**************************************************************
+     * 
+     * ★assignRoleメソッド★
+     * 
+     * UserへRole(役割)を付与するメソッド
+     * 
+     **********************************************************/
+
+    if ($request->roles) {
+      $user->assignRole($request->roles);
+    }
+
+    $notification = array(
+      'message' => 'Admin User Created Successfully',
+      'alert-type' => 'success'
+    );
+
+    return redirect()->route('all.admin')->with($notification);
+  } // End Method 
 }

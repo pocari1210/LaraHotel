@@ -43,11 +43,15 @@
             @foreach ($alladmin as $key=> $item )
             <tr>
               <td>{{ $key+1 }}</td>
-              <td> <img src="{{ (!empty($item->photo)) ? url('storage/upload/admin_images/'.$item->photo) : url('upload/no_image.jpg') }}" alt="" style="width: 70px; height:40px;"> </td>
+              <td> <img src="{{ (!empty($item->photo)) ? url('storage/upload/admin_images/'.$item->photo) : url('storage/upload/no_image.jpg') }}" alt="" style="width: 70px; height:40px;"> </td>
               <td>{{ $item->name }}</td>
               <td>{{ $item->email }}</td>
               <td>{{ $item->phone }}</td>
-              <td> role </td>
+              <td>
+                @foreach ($item->roles as $role)
+                <span class="badge badge-pill bg-danger">{{ $role->name }}</span>
+                @endforeach
+              </td>
               <td>
                 <a href="{{ route('edit.roles',$item->id) }}" class="btn btn-warning px-3 radius-30"> Edit</a>
                 <a href="{{ route('delete.roles',$item->id) }}" class="btn btn-danger px-3 radius-30" id="delete"> Delete</a>

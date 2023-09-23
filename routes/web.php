@@ -414,6 +414,9 @@ Route::controller(AdminController::class)->group(function () {
 
   Route::get('/add/admin', 'AddAdmin')
     ->name('add.admin');
+
+  Route::post('/store/admin', 'StoreAdmin')
+    ->name('store.admin');
 });
 
 /// Room All Route 
