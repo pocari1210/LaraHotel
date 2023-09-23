@@ -406,6 +406,16 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
   });
 }); // End Admin Group Middleware 
 
+/// Admin User All Route 
+Route::controller(AdminController::class)->group(function () {
+
+  Route::get('/all/admin', 'AllAdmin')
+    ->name('all.admin');
+
+  Route::get('/add/admin', 'AddAdmin')
+    ->name('add.admin');
+});
+
 /// Room All Route 
 Route::controller(FrontendRoomController::class)->group(function () {
 
