@@ -1,0 +1,86 @@
+
+
+
+
+◆モデルの編集◆
+
+ディレクトリ
+\app\Models\User.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public static function getpermissionGroups()
+  {
+    $permission_groups = DB::table('permissions')
+      ->select('group_name')
+      ->groupBy('group_name')->get();
+
+    return $permission_groups;
+  } // End Method 
+
+  public static function getpermissionByGroupName($group_name)
+  {
+    $permissions = DB::table('permissions')
+      ->select('name', 'id')
+      ->where('group_name', $group_name)
+      ->get();
+
+    return $permissions;
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Backend\RoleController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function AddRolesPermission()
+  {
+    $roles = Role::all();
+    $permissions = Permission::all();
+
+    ↓↓routeの追加↓↓
+    $permission_groups = User::getpermissionGroups();
+
+    return view(
+      'backend.pages.rolesetup.add_roles_permission',
+      compact('roles', 'permissions', 'permission_groups')
+    );
+  } // End Method
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集◆
+
+ディレクトリ
+\resources\views\backend\pages\rolesetup\add_roles_permission.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  @foreach ($permission_groups as $group)
+  <div class="row">
+    <div class="col-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+        <label class="form-check-label" for="flexCheckDefault"> {{ $group->group_name }} </label>
+      </div>
+    </div>
+
+    <div class="col-9">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+        <label class="form-check-label" for="flexCheckDefault">Permission All </label>
+      </div>
+    </div>
+  </div>
+  @endforeach
+  <!-- end row -->
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+登録したRolesがforeach文で疎通されていたらOK
+

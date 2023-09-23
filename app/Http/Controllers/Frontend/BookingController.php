@@ -12,6 +12,8 @@ use Stripe;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookConfirm;
+use App\Notifications\BookingComplete;
+use Illuminate\Support\Facades\Notification;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\Room;
@@ -21,6 +23,7 @@ use App\Models\RoomBookedDate;
 use App\Models\Booking;
 use App\Models\BookingRoomList;
 use App\Models\RoomNumber;
+use App\Models\User;
 
 class BookingController extends Controller
 {
@@ -28,6 +31,7 @@ class BookingController extends Controller
   {
 
     /*****************************************************
+     * 
      * ★Session::hasでbook_dateが存在している場合の処理★
      * 
      * Session::getで、セッションからbook_dateを取得
@@ -36,6 +40,7 @@ class BookingController extends Controller
      * 
      * diffInDaysメソッドで$toDateと$fromDateの
      * 日付の差を返している
+     * 
      *****************************************************/
 
     if (Session::has('book_date')) {
@@ -64,9 +69,11 @@ class BookingController extends Controller
   {
 
     /**********************************
+     * 
      * ★バリデーション★
      * 
      * requiredで入力項目を必須にしている
+     * 
      ***************************************/
 
     $validateData = $request->validate([
@@ -77,12 +84,14 @@ class BookingController extends Controller
     ]);
 
     /************************************************************
+     * 
      * ★available_roomよりnumber_of_roomsが大きいときの処理★
      * 
      * toastrでエラーを表示させ、
      * book_dateのSessionを削除している
      * 
      * Session::forgetでセッションを削除
+     * 
      **********************************************************/
 
     if ($request->available_room < $request->number_of_rooms) {
@@ -121,6 +130,8 @@ class BookingController extends Controller
 
   public function CheckoutStore(Request $request)
   {
+
+    $user = User::where('role', 'admin')->get();
 
     /****************************************************
      * ★バリデーション★
@@ -223,6 +234,9 @@ class BookingController extends Controller
       'message' => 'Booking Added Successfully',
       'alert-type' => 'success'
     );
+
+    Notification::send($user, new BookingComplete($request->name));
+
     return redirect('/')->with($notification);
   } // End Method   
 
@@ -424,5 +438,19 @@ class BookingController extends Controller
     ]);
 
     return $pdf->download('invoice.pdf');
+  } // End Method 
+
+  public function MarkAsRead(Request $request, $notificationId)
+  {
+
+    $user = Auth::user();
+    $notification = $user->notifications()
+      ->where('id', $notificationId)->first();
+
+    if ($notification) {
+      $notification->markAsRead();
+    }
+
+    return response()->json(['count' => $user->unreadNotifications()->count()]);
   } // End Method 
 }

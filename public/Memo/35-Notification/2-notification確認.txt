@@ -1,0 +1,73 @@
+
+
+2-notification確認
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+/// Notification All Route 
+Route::controller(BookingController::class)->group(function () {
+
+  Route::post('/mark-notification-as-read/{notification}', 'MarkAsRead');
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+<script>
+  function markNotificationAsRead(notificationId) {
+
+    fetch('/mark-notification-as-read/' + notificationId, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({})
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('notification-count').textContent = data.count;
+      })
+      .catch(error => {
+        console.log('Error', error);
+      });
+  }
+</script>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆コントローラーの編集◆
+
+ディレクトリ
+\app\Http\Controllers\Frontend\BookingController.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  public function MarkAsRead(Request $request, $notificationId)
+  {
+
+    $user = Auth::user();
+    $notification = $user->notifications()
+      ->where('id', $notificationId)->first();
+
+    if ($notification) {
+      $notification->markAsRead();
+    }
+
+    return response()->json(['count' => $user->unreadNotifications()->count()]);
+  } // End Method 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+通知の確認を行った後、ncountの数が減っていたらOK

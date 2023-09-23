@@ -1,0 +1,47 @@
+
+下記コマンドでライブラリインストール
+composer require maatwebsite/excel
+
+◆Configの編集◆
+
+ディレクトリ
+\config\app.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /*
+    |--------------------------------------------------------------------------
+    | Autoloaded Service Providers
+    |--------------------------------------------------------------------------
+    |
+    | The service providers listed here will be automatically loaded on the
+    | request to your application. Feel free to add your own services to
+    | this array to grant expanded functionality to your applications.
+    |
+    */
+
+  'providers' => ServiceProvider::defaultProviders()->merge(
+
+Maatwebsite\Excel\ExcelServiceProvider::class,
+
+  'aliases' => Facade::defaultAliases()->merge([
+
+    ↓↓追記↓↓
+    'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+◆ビューの編集(遷移元)◆
+
+下記コマンドで、Configファイル作成
+php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
+
+ディレクトリ
+\config\excel.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+特になし
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
