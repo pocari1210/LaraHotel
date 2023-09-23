@@ -3,6 +3,13 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
+<style>
+  /* 先頭の文字を大文字にする */
+  .form-check-label {
+    text-transform: capitalize;
+  }
+</style>
+
 <div class="page-content">
   <!--breadcrumb-->
   <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -39,8 +46,8 @@
                 </div>
 
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                  <label class="form-check-label" for="flexCheckDefault">Permission All </label>
+                  <input class="form-check-input" type="checkbox" value="" id="CheckDefaultmain">
+                  <label class="form-check-label" for="CheckDefaultmain">Permission All </label>
                 </div>
 
                 <hr>
@@ -83,5 +90,24 @@
     </div>
   </div>
 </div>
+
+<!--------------------------------------------------------  
+
+★Permission Allのチェックボックス★
+
+Permission Allをチェックしたら、全てのPermissionとRolesの
+チェックが入るようにしている
+
+--------------------------------------------------------->
+
+<script>
+  $('#CheckDefaultmain').click(function() {
+    if ($(this).is(':checked')) {
+      $('input[ type= checkbox]').prop('checked', true);
+    } else {
+      $('input[ type= checkbox]').prop('checked', false);
+    }
+  });
+</script>
 
 @endsection
