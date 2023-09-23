@@ -400,6 +400,9 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/admin/roles/update/{id}', 'AdminRolesUpdate')
       ->name('admin.roles.update');
+
+    Route::get('/admin/delete/roles/{id}', 'AdminDeleteRoles')
+      ->name('admin.delete.roles');
   });
 }); // End Admin Group Middleware 
 
