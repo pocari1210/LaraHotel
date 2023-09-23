@@ -105,10 +105,12 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
   Route::controller(TeamController::class)->group(function () {
 
     Route::get('/all/team', 'AllTeam')
-      ->name('all.team');
+      ->name('all.team')
+      ->middleware('permission:team.all');
 
     Route::get('/add/team', 'AddTeam')
-      ->name('add.team');
+      ->name('add.team')
+      ->middleware('permission:team.add');
 
     Route::post('/team/store', 'StoreTeam')
       ->name('team.store');

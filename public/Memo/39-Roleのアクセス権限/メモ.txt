@@ -1,0 +1,81 @@
+
+◆ビューの編集(遷移元)◆
+
+ディレクトリ
+\resources\views\admin\body\sidebar.blade.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+    @if(Auth::user()->can('team.menu'))
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-category"></i>
+        </div>
+        <div class="menu-title">Manage Teams</div>
+      </a>
+      <ul>
+        @if(Auth::user()->can('team.all'))
+        <li> <a href="{{ route('all.team') }}"><i class='bx bx-radio-circle'></i>All Team</a>
+        </li>
+        @endif
+
+        @if(Auth::user()->can('team.add'))
+        <li> <a href="{{ route('add.team') }}"><i class='bx bx-radio-circle'></i>Add Team</a>
+        </li>
+        @endif
+      </ul>
+    </li>
+    @endif
+
+★コード解説★
+Auth::user()->canで権限をもっていたら表示、
+権限がなければ非表示になる
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+URLで検索すると、権限がなくても遷移ができてしまうので、
+下記で対策をする
+
+◆ルートの編集◆
+
+ディレクトリ
+\routes\web.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  /// Team All Route 
+  Route::controller(TeamController::class)->group(function () {
+
+    Route::get('/all/team', 'AllTeam')
+      ->name('all.team')
+      ->middleware('permission:team.all');
+
+    Route::get('/add/team', 'AddTeam')
+      ->name('add.team')
+      ->middleware('permission:team.add');
+
+★コード解説★
+middlewareのpermissionは、kernelと紐づいている
+team.allはPermission Nameを指す
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+◆Kernelの編集◆
+
+ディレクトリ
+\app\Http\Kernel.php
+
+・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・
+
+  protected $middlewareAliases = [
+
+    'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+    'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
+    'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+権限がない状態で、URLで検索し、403エラーが返ってくればOK
